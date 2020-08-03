@@ -1,0 +1,21 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- task: CmdLine@2
+  displayName: 'Instalar Newman'
+  inputs:
+    script: 'sudo npm install -g newman'
+- task: CmdLine@2
+  displayName: 'ejecutar coleccion'
+  inputs:
+    script: 'newman run PayrollLiquidator.postman_collection.json -d Nominacsv1.csv'
+
