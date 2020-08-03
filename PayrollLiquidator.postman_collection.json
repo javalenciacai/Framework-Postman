@@ -1,0 +1,688 @@
+{
+	"info": {
+		"_postman_id": "03aa8243-7846-4b0b-92a1-643367f30dd3",
+		"name": "PayrollLiquidator",
+		"description": "Endpoint de nomina para crear obtener y borrar nominas",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "435919bb-d7c4-4bdb-bff0-b3260034c1c1",
+								"exec": [
+									"if (pm.variables.get(\"username\") != \"\") {",
+									"",
+									"    bodyData = JSON.parse(responseBody)",
+									"",
+									"    token_value = bodyData.access_token",
+									"",
+									"    pm.environment.set(\"token\", token_value);",
+									"",
+									"",
+									"    if (pm.response.text() == \"invalid_grant\") {",
+									"",
+									"        pm.test(\"Status code is 200\", function () {",
+									"            pm.response.to.have.status(200);",
+									"        });",
+									"    }",
+									"}",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "b17377d5-d9e6-4433-92aa-06d2262ea2b9",
+								"exec": [
+									"pm.environment.set(\"urltoken\", \"http://23.101.145.208:50000\");\r",
+									"pm.collectionVariables.set(\"username\", \"admin@prwizarddef3.com\");\r",
+									"pm.collectionVariables.set(\"password\", \"1111\");"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Basic U2lpZ29XZWI6QUJBMDhCNkEtQjU2Qy00MEE1LTkwQ0YtN0MxRTU0ODkxQjYx",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{password}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "WebApi offline_access",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{username}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{urltoken}}/connect/token",
+							"host": [
+								"{{urltoken}}"
+							],
+							"path": [
+								"connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Genera el token para la autorizacion a las apis",
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Post",
+			"item": [
+				{
+					"name": "CreatePayroll",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "d9808b93-2678-4722-a4e1-65ec296f0bc6",
+								"exec": [
+									"pm.environment.set(\"url\", \"https://payrollliquidatorqa.azurewebsites.net\");\r",
+									"\r",
+									"\r",
+									"//pm.collectionVariables.set(\"stringResponseCreate\", \"is an invalid start of a value. Path:\")\r",
+									"\r",
+									"pm.collectionVariables.set(\"stringResponseCreate\", \"PayrollPeriodID\")\r",
+									"\r",
+									"pm.collectionVariables.set(\"status\", 200)\r",
+									"\r",
+									"pm.collectionVariables.set(\"periodType\", \"1\");\r",
+									"pm.collectionVariables.set(\"description\", \"Nomina Enero 2021\");\r",
+									"pm.collectionVariables.set(\"year\", \"2021\");\r",
+									"pm.collectionVariables.set(\"month\", \"\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "f7ef9f06-a17a-43c5-8afe-ef4b336cad8c",
+								"exec": [
+									"//Se crean la variables\r",
+									"var testStatus = pm.variables.get(\"statusCreate\")\r",
+									"var stringResponse = pm.variables.get(\"stringResponseCreate\")\r",
+									"\r",
+									"//carga el body como Json\r",
+									"bodyData = JSON.parse(responseBody);\r",
+									"\r",
+									"//obtiene el id del la nomina\r",
+									"pm.collectionVariables.set(\"payrollPeriodId\", bodyData.PayrollPeriodID);\r",
+									"if (pm.collectionVariables.get(\"payrollPeriodId\") == null) {\r",
+									"    if (pm.iterationData.get(\"status\") == 200) {\r",
+									"        pm.collectionVariables.set(\"payrollPeriodId\", 1)\r",
+									"    } else {\r",
+									"        pm.collectionVariables.set(\"payrollPeriodId\", pm.iterationData.get(\"payrollPeriodIdTest\"))\r",
+									"\r",
+									"    }\r",
+									"\r",
+									"    console.log(\"ID = \" + pm.collectionVariables.get(\"payrollPeriodId\"))\r",
+									"}\r",
+									"\r",
+									"pm.test(\"Response time is less than 2000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"});\r",
+									"\r",
+									"// Validando miltiples status\r",
+									"pm.test(\"Status code is \" + testStatus, function () {\r",
+									"    pm.response.to.have.status(testStatus);\r",
+									"});\r",
+									"\r",
+									"//Se valida las respuestas del body\r",
+									"pm.test(\"Body matches string \" + stringResponse, function () {\r",
+									"    pm.expect(pm.response.text()).to.include(stringResponse);\r",
+									"});\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"periodType\": {{periodType}},\r\n  \"description\": \"{{description}}\",\r\n  \"year\": {{year}},\r\n  \"month\": {{month}}\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/PayrollLiquidator/CreatePayroll",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"PayrollLiquidator",
+								"CreatePayroll"
+							]
+						},
+						"description": "Con datos desde csv crea una o varias nominas para que luego las valide el get GetPayrollPeriodEmployees"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Get",
+			"item": [
+				{
+					"name": "GetPayrollPeriodEmployees",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "01bf7d08-51ff-48b4-b6f4-54a47e78560e",
+								"exec": [
+									"pm.collectionVariables.set(\"status\", 200)\r",
+									"\r",
+									"pm.collectionVariables.set(\"propertyConcept\", \"value\");\r",
+									"\r",
+									"pm.collectionVariables.set(\"propertyEmployees\", \"fullName\");\r",
+									"\r",
+									"pm.collectionVariables.set(\"totalRevenue\", '\"totalRevenue\":\"65867780\"');\r",
+									"\r",
+									"pm.collectionVariables.set(\"totalDeduction\", '\"totalDeduction\":\"0\"');\r",
+									"\r",
+									"pm.collectionVariables.set(\"totalNeto\", '\"totalNeto\":\"65867780\"');\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "559ae750-97b0-4ed1-9e5a-5ee31372b133",
+								"exec": [
+									"//Se crean la variables\r",
+									"var testStatus = pm.variables.get(\"statusGetPayroll\")\r",
+									"\r",
+									"//carga el body como Json\r",
+									"if (responseBody != \"\") {\r",
+									"    bodyData = JSON.parse(responseBody);\r",
+									"}\r",
+									"\r",
+									"//carga el csv con el json de una nomina\r",
+									"if (pm.variables.get(\"json\") != \"\") {\r",
+									"    csvData = JSON.parse(pm.variables.get(\"json\"));\r",
+									"}\r",
+									"\r",
+									"//carga el csv con el json de valor del concepto a validar\r",
+									"propertyConcept = pm.variables.get(\"propertyConcept\");\r",
+									"\r",
+									"propertyEmployees = pm.variables.get(\"propertyEmployees\");\r",
+									"\r",
+									"//carga el csv con el json del ingreso total de una nomina\r",
+									"totalRevenue = pm.variables.get(\"totalRevenue\");\r",
+									"\r",
+									"//carga el csv con el json del total deduccion de una nomina\r",
+									"totalDeduction = pm.variables.get(\"totalDeduction\");\r",
+									"\r",
+									"//carga el csv con el json del ingreso total de una nomina\r",
+									"totalNeto = pm.variables.get(\"totalNeto\");\r",
+									"\r",
+									"\r",
+									"//cuenta el numero de empledos en el body\r",
+									"function count() {\r",
+									"    var count = 0\r",
+									"    for (var i in bodyData.employeesData) {\r",
+									"        count = count + 1\r",
+									"    }\r",
+									"    return count\r",
+									"}\r",
+									"\r",
+									"\r",
+									"//cuenta el numero de empledos en el csv\r",
+									"function councsv() {\r",
+									"    var councsv = 0\r",
+									"    for (var i in csvData.employeesData) {\r",
+									"        councsv = councsv + 1\r",
+									"    }\r",
+									"    return councsv\r",
+									"\r",
+									"}\r",
+									"\r",
+									"\r",
+									"//cuenta el numero de conceptos de una empleados\r",
+									"function count_Novelties(No_employee) {\r",
+									"    var countNovelties = 0\r",
+									"    for (var i in bodyData.employeesData[No_employee].novelties) {\r",
+									"        countNovelties = countNovelties + 1\r",
+									"    }\r",
+									"    return countNovelties;\r",
+									"}\r",
+									"\r",
+									"// recorre el json y valida las novedades en el log sale el empleado incorrecto\r",
+									"function validate_Concept(propertyConcept) {\r",
+									"    var i = 0;\r",
+									"    do {\r",
+									"        for (var j = 0; j < count_Novelties(i); j++) {\r",
+									"            if (bodyData.employeesData[i].novelties[j][propertyConcept] !=\r",
+									"                csvData.employeesData[i].novelties[j][propertyConcept]) {\r",
+									"                employeesFail = csvData.employeesData[i].fullName + \" Esta incorrecto\"\r",
+									"                console.log(employeesFail)\r",
+									"                return false\r",
+									"\r",
+									"            }\r",
+									"        } i++\r",
+									"    } while (i <= councsv() - 1)\r",
+									"    return true;\r",
+									"}\r",
+									"\r",
+									"\r",
+									"function validate_Names(propertyEmployees) {\r",
+									"    var i = 0\r",
+									"    do {\r",
+									"        bodyFullName = bodyData.employeesData[i][propertyEmployees]\r",
+									"        csvFullName = csvData.employeesData[i][propertyEmployees]\r",
+									"        if (bodyFullName != csvFullName) {\r",
+									"            namesFail = csvData.employeesData[i].fullName + \" Esta incorrecto\"\r",
+									"            console.log(namesFail)\r",
+									"            return false\r",
+									"        }\r",
+									"        i++\r",
+									"    } while (i < councsv() - 1)\r",
+									"    return true;\r",
+									"}\r",
+									"\r",
+									"\r",
+									"pm.test(\"Response time is less than 1000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+									"});\r",
+									"\r",
+									"// Validando miltiples status\r",
+									"pm.test(\"Status code is \" + testStatus, function () {\r",
+									"    pm.response.to.have.status(testStatus);\r",
+									"});\r",
+									"\r",
+									"if (testStatus == 200) {\r",
+									"    // valida totales de nomina\r",
+									"    pm.test(\"Validation of totals\", function () {\r",
+									"        pm.expect(pm.response.text()).to.include(totalRevenue);\r",
+									"        pm.expect(pm.response.text()).to.include(totalDeduction);\r",
+									"        pm.expect(pm.response.text()).to.include(totalNeto);\r",
+									"    });\r",
+									"\r",
+									"    //valida cantidad de empleados que deben estar en la nomina\r",
+									"    pm.test(\"Number of employees is correct\", function () {\r",
+									"        pm.expect(count()).to.eql(councsv());\r",
+									"    });\r",
+									"\r",
+									"    //valida las propiedades del empreado\r",
+									"    pm.test(\"Validate the \" + propertyEmployees + \" of the employee \", function () {\r",
+									"        pm.expect(validate_Names(propertyEmployees)).to.eql(true);\r",
+									"    });\r",
+									"\r",
+									"    //valida las propiedades de los conceptos por empleados\r",
+									"    pm.test(\"Validate the concept \" + propertyConcept + \" of the employees \", function () {\r",
+									"        pm.expect(validate_Concept(propertyConcept)).to.eql(true);\r",
+									"    });\r",
+									"\r",
+									"\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{url}}/api/v1/PayrollLiquidator/GetPayrollPeriodEmployees/{{payrollPeriodId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"PayrollLiquidator",
+								"GetPayrollPeriodEmployees",
+								"{{payrollPeriodId}}"
+							]
+						},
+						"description": "Se realizan test fijos y variables desde csv "
+					},
+					"response": [
+						{
+							"name": "GetPayrollPeriodEmployees",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{url}}/api/v1/PayrollLiquidator/GetPayrollPeriodEmployees/{{payrollPeriodId}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"PayrollLiquidator",
+										"GetPayrollPeriodEmployees",
+										"{{payrollPeriodId}}"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Length",
+									"value": "4347"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Server",
+									"value": "Microsoft-IIS/10.0"
+								},
+								{
+									"key": "Request-Context",
+									"value": "appId=cid-v1:94e7e4f1-9eae-4091-aff3-3266f540ad6c"
+								},
+								{
+									"key": "X-Powered-By",
+									"value": "ASP.NET"
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 01 Jul 2020 15:37:22 GMT"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"employeesData\": [\n        {\n            \"usersCode\": \"34424\",\n            \"identification\": \"11366507\",\n            \"contractCode\": 2151,\n            \"fullName\": \"JUAN ORLANDO PARDO BELTRAN\",\n            \"totalRevenue\": \"1128896\",\n            \"totalDeduction\": \"82084\",\n            \"totalNeto\": \"1046812\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Auxilio de transporte\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105067,\n                    \"conceptName\": \"[C_HorasExtrasDiurnas125]\",\n                    \"description\": \"Horas extras diurnas 125%\",\n                    \"usersValue\": \"5\",\n                    \"valueType\": 0,\n                    \"value\": \"26042\",\n                    \"natureType\": 0,\n                    \"isDefault\": false,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"41042\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"41042\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34466\",\n            \"identification\": \"16934849\",\n            \"contractCode\": 2190,\n            \"fullName\": \"MARIO ANDRES GAMBOA BERMEO\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34432\",\n            \"identification\": \"17344630\",\n            \"contractCode\": 2159,\n            \"fullName\": \"aLIRIO SaNaBrIa\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34433\",\n            \"identification\": \"17345090\",\n            \"contractCode\": 2160,\n            \"fullName\": \"HECTOR JAVIER ROJAS\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34434\",\n            \"identification\": \"17546920\",\n            \"contractCode\": 2161,\n            \"fullName\": \"OVIDIO GOMEZ GARCIA\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"56000\",\n            \"totalNeto\": \"1046854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105131,\n                    \"conceptName\": \"[C_SalarioIntegral]\",\n                    \"description\": \"Salario Integral\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"28000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"28000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34435\",\n            \"identification\": \"18144198\",\n            \"contractCode\": 2162,\n            \"fullName\": \"CARLOS ALFONSO MATA\",\n            \"totalRevenue\": \"1000000\",\n            \"totalDeduction\": \"0\",\n            \"totalNeto\": \"1000000\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105069,\n                    \"conceptName\": \"[C_CuotaSostenimiento]\",\n                    \"description\": \"Cuota de sostenimiento\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34436\",\n            \"identification\": \"18145489\",\n            \"contractCode\": 2163,\n            \"fullName\": \"LUIS FELIPE VILLOTA\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34437\",\n            \"identification\": \"18146149\",\n            \"contractCode\": 2164,\n            \"fullName\": \"ORLANDO LEONEL GAVIRIA LOPEZ\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34438\",\n            \"identification\": \"18147296\",\n            \"contractCode\": 2165,\n            \"fullName\": \"HUGO ANDRES SALAZAR\",\n            \"totalRevenue\": \"2000000\",\n            \"totalDeduction\": \"160000\",\n            \"totalNeto\": \"1840000\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"2000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"80000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"80000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34439\",\n            \"identification\": \"19772116\",\n            \"contractCode\": 2166,\n            \"fullName\": \"WASHINTON HERRERA CAMACHO\",\n            \"totalRevenue\": \"13000000\",\n            \"totalDeduction\": \"2630576\",\n            \"totalNeto\": \"10369424\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"13000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"520000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"520000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105099,\n                    \"conceptName\": \"[C_Retefuente]\",\n                    \"description\": \"Retefuente\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"1590576\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34440\",\n            \"identification\": \"23913269\",\n            \"contractCode\": 2167,\n            \"fullName\": \"OLGA MARIA ESTUPIÑAN ESTUPIÑAN\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34425\",\n            \"identification\": \"12130411\",\n            \"contractCode\": 2152,\n            \"fullName\": \"EIDER GRANADOS HERRERA\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34441\",\n            \"identification\": \"26607614\",\n            \"contractCode\": 2168,\n            \"fullName\": \"YUSBENI CERQUERA\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34442\",\n            \"identification\": \"27399910\",\n            \"contractCode\": 2169,\n            \"fullName\": \"OLINDA CABEZAS\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34443\",\n            \"identification\": \"32786877\",\n            \"contractCode\": 2170,\n            \"fullName\": \"BELQUIS TRILLOS\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34444\",\n            \"identification\": \"32939819\",\n            \"contractCode\": 2171,\n            \"fullName\": \"MILENA DEL CARMEN CONSUEGRA\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34445\",\n            \"identification\": \"34570101\",\n            \"contractCode\": 2172,\n            \"fullName\": \"MARILUT DIAZ HURTADO\",\n            \"totalRevenue\": \"1900000\",\n            \"totalDeduction\": \"152000\",\n            \"totalNeto\": \"1748000\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1900000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"76000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"76000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34446\",\n            \"identification\": \"36287917\",\n            \"contractCode\": 2173,\n            \"fullName\": \"ANA MILENA VARGAS MUÑOZ\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34447\",\n            \"identification\": \"41170691\",\n            \"contractCode\": 2174,\n            \"fullName\": \"MARY CRUZ CORAL SALCEDO\",\n            \"totalRevenue\": \"1900000\",\n            \"totalDeduction\": \"152000\",\n            \"totalNeto\": \"1748000\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1900000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"76000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"76000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34448\",\n            \"identification\": \"45465017\",\n            \"contractCode\": 2175,\n            \"fullName\": \"KATIA MARTINEZ ESCOBAR\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34449\",\n            \"identification\": \"45586506\",\n            \"contractCode\": 2176,\n            \"fullName\": \"DAILESTER GARCIA MENDOZA\",\n            \"totalRevenue\": \"1900000\",\n            \"totalDeduction\": \"152000\",\n            \"totalNeto\": \"1748000\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1900000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"76000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"76000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34450\",\n            \"identification\": \"52780607\",\n            \"contractCode\": 2177,\n            \"fullName\": \"LEONOR ROCIO POLO TORRES\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34426\",\n            \"identification\": \"12193547\",\n            \"contractCode\": 2153,\n            \"fullName\": \"WILSON CAICEDO\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34451\",\n            \"identification\": \"52951911\",\n            \"contractCode\": 2178,\n            \"fullName\": \"MERY ROCIO NIÑO BELTRAN\",\n            \"totalRevenue\": \"1900000\",\n            \"totalDeduction\": \"152000\",\n            \"totalNeto\": \"1748000\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1900000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"76000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"76000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34452\",\n            \"identification\": \"55165958\",\n            \"contractCode\": 2179,\n            \"fullName\": \"MARIA DEYANIRA MENDEZ\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34453\",\n            \"identification\": \"55190742\",\n            \"contractCode\": 2180,\n            \"fullName\": \"LUZ ANGELA POLANIA TORRES\",\n            \"totalRevenue\": \"1900000\",\n            \"totalDeduction\": \"152000\",\n            \"totalNeto\": \"1748000\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1900000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"76000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"76000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34454\",\n            \"identification\": \"1001867654\",\n            \"contractCode\": 2181,\n            \"fullName\": \"MARIA ALEJANDRA VARGAS ARAUJO\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34456\",\n            \"identification\": \"1010222995\",\n            \"contractCode\": 2183,\n            \"fullName\": \"ANGELA JOHANNA CHOCONTA TORRES\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34457\",\n            \"identification\": \"1013652757\",\n            \"contractCode\": 2184,\n            \"fullName\": \"JUAN ESTEBAN CASTRO RODRIGUEZ\",\n            \"totalRevenue\": \"3511212\",\n            \"totalDeduction\": \"280896\",\n            \"totalNeto\": \"3230316\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"3511212\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"140448\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"140448\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34458\",\n            \"identification\": \"1015996035\",\n            \"contractCode\": 2185,\n            \"fullName\": \"KELLY MALENA PEREZ SUAREZ\",\n            \"totalRevenue\": \"14044848\",\n            \"totalDeduction\": \"2933582\",\n            \"totalNeto\": \"11111266\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"14044848\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"561794\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"561794\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105099,\n                    \"conceptName\": \"[C_Retefuente]\",\n                    \"description\": \"Retefuente\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"1809994\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34459\",\n            \"identification\": \"1015996845\",\n            \"contractCode\": 2186,\n            \"fullName\": \"ANGELA MORENO GARAVITO\",\n            \"totalRevenue\": \"15800500\",\n            \"totalDeduction\": \"3442721\",\n            \"totalNeto\": \"12357779\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"15800500\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"632020\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"632020\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105099,\n                    \"conceptName\": \"[C_Retefuente]\",\n                    \"description\": \"Retefuente\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"2178681\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34460\",\n            \"identification\": \"1016097775\",\n            \"contractCode\": 2187,\n            \"fullName\": \"KAREN YISED GAONA CARDENAS\",\n            \"totalRevenue\": \"16679000\",\n            \"totalDeduction\": \"3697486\",\n            \"totalNeto\": \"12981514\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"16679000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"667160\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"667160\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105099,\n                    \"conceptName\": \"[C_Retefuente]\",\n                    \"description\": \"Retefuente\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"2363166\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34465\",\n            \"identification\": \"12196014\",\n            \"contractCode\": 2189,\n            \"fullName\": \"ERVI CAICEDO SIERRA\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34461\",\n            \"identification\": \"1018409643\",\n            \"contractCode\": 2188,\n            \"fullName\": \"FADHUL YAVER QUINTERO\",\n            \"totalRevenue\": \"22000000\",\n            \"totalDeduction\": \"5427377\",\n            \"totalNeto\": \"16572623\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"22000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"877803\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"877803\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105099,\n                    \"conceptName\": \"[C_Retefuente]\",\n                    \"description\": \"Retefuente\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"3671771\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34467\",\n            \"identification\": \"1019131090\",\n            \"contractCode\": 2191,\n            \"fullName\": \"ALEXANDRA CORTES\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34469\",\n            \"identification\": \"1020761789\",\n            \"contractCode\": 2193,\n            \"fullName\": \"CARLOS DIAZ\",\n            \"totalRevenue\": \"1900000\",\n            \"totalDeduction\": \"152000\",\n            \"totalNeto\": \"1748000\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1900000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"76000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"76000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34427\",\n            \"identification\": \"12196168\",\n            \"contractCode\": 2154,\n            \"fullName\": \"IÑAQUI FAGÜA MONGÜI DE LA HOZ\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34428\",\n            \"identification\": \"12196888\",\n            \"contractCode\": 2155,\n            \"fullName\": \"ÉRNESTO LOPÉZ ESCARPETA\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34429\",\n            \"identification\": \"14696746-9\",\n            \"contractCode\": 2156,\n            \"fullName\": \"JARVI BALVINO URREGO BENAVIDEZ\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34430\",\n            \"identification\": \"14698408\",\n            \"contractCode\": 2157,\n            \"fullName\": \"LEIDER ANDRES VERGARA PRADO\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34431\",\n            \"identification\": \"16272651\",\n            \"contractCode\": 2158,\n            \"fullName\": \"LEIDER ANDRES VERGARA PRADO\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        },\n        {\n            \"usersCode\": \"34471\",\n            \"identification\": \"10612613\",\n            \"contractCode\": 2195,\n            \"fullName\": \"Anyela Rivera\",\n            \"totalRevenue\": \"1102854\",\n            \"totalDeduction\": \"80000\",\n            \"totalNeto\": \"1022854\",\n            \"novelties\": [\n                {\n                    \"conceptCode\": 105068,\n                    \"conceptName\": \"[C_Salario]\",\n                    \"description\": \"Sueldo\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"1000000\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105070,\n                    \"conceptName\": \"[C_SubsidioTransporte]\",\n                    \"description\": \"Aux. de transporte/Aux. de conectividad digital\",\n                    \"usersValue\": \"30\",\n                    \"valueType\": 0,\n                    \"value\": \"102854\",\n                    \"natureType\": 0,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105050,\n                    \"conceptName\": \"[C_FondoSalud]\",\n                    \"description\": \"Fondo de salud\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                },\n                {\n                    \"conceptCode\": 105049,\n                    \"conceptName\": \"[C_FondoPension]\",\n                    \"description\": \"Fondo de pensión\",\n                    \"usersValue\": \"0\",\n                    \"valueType\": 0,\n                    \"value\": \"40000\",\n                    \"natureType\": 1,\n                    \"isDefault\": true,\n                    \"factor\": null\n                }\n            ],\n            \"calendarNovelties\": []\n        }\n    ],\n    \"periodTotals\": {\n        \"totalRevenue\": \"130341514\",\n        \"totalDeduction\": \"21702722\",\n        \"totalNeto\": \"108638792\",\n        \"totalBonus\": null\n    }\n}"
+						}
+					]
+				},
+				{
+					"name": "DeletePayroll",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "bab40f92-6d7b-4de9-be45-793fd5a56eb5",
+								"exec": [
+									"\r",
+									"//pm.collectionVariables.set(\"string\",\"The value 'aaaaa' is not valid.\")\r",
+									"\r",
+									"pm.collectionVariables.set(\"string\",\"Payroll Deleted\")\r",
+									"\r",
+									"//pm.collectionVariables.set(\"string\",\"Bad Request\")\r",
+									"\r",
+									"pm.collectionVariables.set(\"status\", 200)\r",
+									"\r",
+									"\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "45a09843-5dcf-4d68-86ca-43fbe053fc93",
+								"exec": [
+									"//Se crean la variables\r",
+									"var testStatus = pm.variables.get(\"statusDelete\")\r",
+									"var stringResponse = pm.variables.get(\"string\")\r",
+									"\r",
+									"pm.test(\"Response time is less than 500ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+									"});\r",
+									"\r",
+									"//Se valida los diferentes status\r",
+									"pm.test(\"Status code is \" + testStatus, function () {\r",
+									"    pm.response.to.have.status(testStatus);\r",
+									"});\r",
+									"\r",
+									"\r",
+									"//Se valida las respuestas del body\r",
+									"if (pm.collectionVariables.get(\"payrollPeriodId\") == null) {\r",
+									"    pm.test(\"Body matches string \" + stringResponse, function () {\r",
+									"        pm.expect(pm.response.text()).to.include(stringResponse);\r",
+									"    });\r",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "{{token}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1/PayrollLiquidator/DeletePayroll/{{payrollPeriodId}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"PayrollLiquidator",
+								"DeletePayroll",
+								"{{payrollPeriodId}}"
+							]
+						},
+						"description": "Borra lo nomina que se creo previamente"
+					},
+					"response": []
+				}
+			],
+			"description": "Obtiene una nomina de un periodo que le pasa el post CreatePayroll y luego la valida con los json que contiene el csv ",
+			"protocolProfileBehavior": {}
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "c79fa0b5-6023-45a5-94f6-3404bcbc94cd",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "f9d8bc52-81fb-4fd0-876c-01a911b0a1e7",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "4bb68781-c8ec-451d-b606-a90f9dc99b36",
+			"key": "payrollPeriodId",
+			"value": "Variable de response"
+		},
+		{
+			"id": "74a6e778-454e-4514-be4c-e2f5ed952edc",
+			"key": "json",
+			"value": ""
+		},
+		{
+			"id": "0dbcb597-8387-4239-9520-b7f08b82d679",
+			"key": "totalRevenue",
+			"value": ""
+		},
+		{
+			"id": "659bdb34-b731-4330-8d77-b31e549afa1e",
+			"key": "totalDeduction",
+			"value": ""
+		},
+		{
+			"id": "23e36ba2-be95-4dd5-b9e9-915dce10cd5b",
+			"key": "totalNeto",
+			"value": ""
+		},
+		{
+			"id": "17cc52c6-f3b1-432a-a16e-0c544139bc40",
+			"key": "password",
+			"value": ""
+		},
+		{
+			"id": "cb7a36d8-88fa-4a6f-b3da-c2b803e8d8bd",
+			"key": "username",
+			"value": ""
+		},
+		{
+			"id": "0e999a55-f2ea-44cd-94eb-a351a17b108f",
+			"key": "periodType",
+			"value": ""
+		},
+		{
+			"id": "c7ea3714-2586-4331-8a1e-46a6ed761981",
+			"key": "description",
+			"value": ""
+		},
+		{
+			"id": "e6e6f39c-c9d3-47f0-a95e-c1c5218659c5",
+			"key": "year",
+			"value": ""
+		},
+		{
+			"id": "2993adce-ef23-4602-bf3b-b4ef6a51af8a",
+			"key": "month",
+			"value": ""
+		},
+		{
+			"id": "e0b1e122-5b6f-4797-8f1b-9a0a6637628b",
+			"key": "propertyEmployees",
+			"value": ""
+		},
+		{
+			"id": "bd4d63cf-2c27-482f-b955-be556e2b9be6",
+			"key": "propertyConcept",
+			"value": ""
+		},
+		{
+			"id": "dda3c7e4-de46-4814-8d41-75a26c30d146",
+			"key": "errors",
+			"value": ""
+		},
+		{
+			"id": "b473fb0e-28b0-411e-a117-a9b68f455104",
+			"key": "status",
+			"value": ""
+		},
+		{
+			"id": "59655342-2608-4821-b088-de0169fc0e92",
+			"key": "stringResponse",
+			"value": ""
+		},
+		{
+			"id": "76da0f32-f89e-409f-b32a-6ed725c2fff5",
+			"key": "stringResponseCreate",
+			"value": ""
+		},
+		{
+			"id": "90188e8b-fad6-4f0a-ac29-afdd2d8ae241",
+			"key": "payrollPeriodIdTest",
+			"value": ""
+		},
+		{
+			"id": "6ef7c4f2-8e47-4c7f-9d49-1fbe5c6b1767",
+			"key": "string",
+			"value": ""
+		}
+	],
+	"protocolProfileBehavior": {}
+}
