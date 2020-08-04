@@ -15,6 +15,13 @@ steps:
   inputs:
     script: 'sudo npm install -g newman'
 
+- task: CmdLine@2
+  displayName: 'Instalar Newman-reporter-html'
+  inputs:
+    script: 'npm install newman-reporter-html'
+    
+    
+
 - task: NewmanPostman@4
   inputs:
     collectionSourceType: 'file'
