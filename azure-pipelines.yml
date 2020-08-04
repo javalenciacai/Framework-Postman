@@ -14,8 +14,17 @@ steps:
   displayName: 'Instalar Newman'
   inputs:
     script: 'sudo npm install -g newman'
-- task: CmdLine@2
-  displayName: 'ejecutar coleccion'
+
+- task: NewmanPostman@4
   inputs:
-    script: 'newman run PayrollLiquidator.postman_collection.json -d Nominacsv1.csv'
+    collectionSourceType: 'file'
+    Contents: 'PayrollLiquidator.postman_collection.json'
+    environmentSourceType: 'none'
+    dataFile: 'Nominacsv1.csv'
+    numberOfIterations: 
+    reporters: 'html, htmlextra'
+    htmlExtraDarkTheme: true
+    htmlExtraLogs: true
+    htmlExtraTestPaging: true
+
 
