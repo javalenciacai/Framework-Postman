@@ -34,7 +34,7 @@ steps:
     environmentSourceType: 'none'
     dataFile: 'Nominacsv1.csv'
     numberOfIterations: 
-    reporters: 'html, htmlextra'
+    reporters: 'html'
     htmlExtraDarkTheme: true
     htmlExtraLogs: true
     htmlExtraTestPaging: true
