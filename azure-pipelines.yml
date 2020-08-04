@@ -26,17 +26,13 @@ steps:
     script: 'sudo npm install -g reporter'
     
     
-
 - task: NewmanPostman@4
   inputs:
     collectionSourceType: 'file'
+    collectionFileSource: '/'
     Contents: 'PayrollLiquidator.postman_collection.json'
     environmentSourceType: 'none'
     dataFile: 'Nominacsv1.csv'
-    numberOfIterations: 
-    reporters: 'html'
-    htmlExtraDarkTheme: true
-    htmlExtraLogs: true
-    htmlExtraTestPaging: true
-
+    reporters: 'junit'
+    htmlExtraDarkTheme: false
 
