@@ -18,7 +18,7 @@ steps:
 - task: CmdLine@2
   displayName: 'Instalar Newman-reporter-html'
   inputs:
-    script: 'npm install newman-reporter-html'
+    script: 'sudo npm install -g newman-reporter-html'
     
     
 
