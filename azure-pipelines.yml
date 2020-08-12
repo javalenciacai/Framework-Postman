@@ -11,28 +11,18 @@ pool:
 
 steps:
 - task: CmdLine@2
-  displayName: 'Instalar Newman'
+  displayName: 'Install Newman'
   inputs:
     script: 'sudo npm install -g newman'
 
 - task: CmdLine@2
-  displayName: 'Instalar Newman-reporter-html'
+  displayName: 'Payroll Test Execution'
+  continueOnError: true
   inputs:
-    script: 'sudo npm install -g newman-reporter-html'
+    script: 'newman run PayrollLiquidator_V2.postman_collection.json -d Nominacsv1_V2.csv --insecure --reporters cli,junit --reporter-junit-export Results/junitReport.xml'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/Postman'
 
-- task: CmdLine@2
-  displayName: 'Instalar reporter'
+- task: PublishTestResults@2
   inputs:
-    script: 'sudo npm install -g reporter'
-    
-    
-- task: NewmanPostman@4
-  inputs:
-    collectionSourceType: 'file'
-    collectionFileSource: '/'
-    Contents: 'PayrollLiquidator.postman_collection.json'
-    environmentSourceType: 'none'
-    dataFile: 'Nominacsv1.csv'
-    reporters: 'junit'
-    htmlExtraDarkTheme: false
-
+    testResultsFormat: 'JUnit'
+    testResultsFiles: 'Postman/Results/*.xml'
