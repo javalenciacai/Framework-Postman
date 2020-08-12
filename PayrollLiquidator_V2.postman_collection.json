@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "03aa8243-7846-4b0b-92a1-643367f30dd3",
-		"name": "PayrollLiquidator",
+		"_postman_id": "c9e224c2-eb32-46d9-b51e-a0a0b8605ef9",
+		"name": "PayrollLiquidator_V2",
 		"description": "Endpoint de nomina para crear obtener y borrar nominas",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -13,9 +13,21 @@
 					"name": "auth",
 					"event": [
 						{
+							"listen": "prerequest",
+							"script": {
+								"id": "924818af-f2a5-4890-8cbd-4e44d89b1e0e",
+								"exec": [
+									"pm.environment.set(\"urltoken\", \"http://23.101.145.208:50000\");\r",
+									"pm.environment.set(\"username\", \"1@prw.com\");\r",
+									"pm.environment.set(\"password\", \"1111\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
 							"listen": "test",
 							"script": {
-								"id": "435919bb-d7c4-4bdb-bff0-b3260034c1c1",
+								"id": "7451f99c-ca5d-48c0-b9d2-11f9934ea313",
 								"exec": [
 									"if (pm.variables.get(\"username\") != \"\") {",
 									"",
@@ -24,7 +36,6 @@
 									"    token_value = bodyData.access_token",
 									"",
 									"    pm.environment.set(\"token\", token_value);",
-									"",
 									"",
 									"    if (pm.response.text() == \"invalid_grant\") {",
 									"",
@@ -39,18 +50,6 @@
 								],
 								"type": "text/javascript"
 							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"id": "b17377d5-d9e6-4433-92aa-06d2262ea2b9",
-								"exec": [
-									"pm.environment.set(\"urltoken\", \"http://23.101.145.208:50000\");\r",
-									"pm.collectionVariables.set(\"username\", \"admin@prwizarddef3.com\");\r",
-									"pm.collectionVariables.set(\"password\", \"1111\");"
-								],
-								"type": "text/javascript"
-							}
 						}
 					],
 					"request": {
@@ -58,8 +57,8 @@
 						"header": [
 							{
 								"key": "Authorization",
-								"value": "Basic U2lpZ29XZWI6QUJBMDhCNkEtQjU2Qy00MEE1LTkwQ0YtN0MxRTU0ODkxQjYx",
-								"type": "text"
+								"type": "text",
+								"value": "Basic U2lpZ29XZWI6QUJBMDhCNkEtQjU2Qy00MEE1LTkwQ0YtN0MxRTU0ODkxQjYx"
 							}
 						],
 						"body": {
@@ -85,7 +84,10 @@
 									"value": "{{username}}",
 									"type": "text"
 								}
-							]
+							],
+							"options": {
+								"urlencoded": {}
+							}
 						},
 						"url": {
 							"raw": "{{urltoken}}/connect/token",
@@ -113,7 +115,7 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "d9808b93-2678-4722-a4e1-65ec296f0bc6",
+								"id": "53c1a6ef-11ad-4a20-9228-673e4705fae5",
 								"exec": [
 									"pm.environment.set(\"url\", \"https://payrollliquidatorqa.azurewebsites.net\");\r",
 									"\r",
@@ -122,12 +124,12 @@
 									"\r",
 									"pm.collectionVariables.set(\"stringResponseCreate\", \"PayrollPeriodID\")\r",
 									"\r",
-									"pm.collectionVariables.set(\"status\", 200)\r",
+									"pm.collectionVariables.set(\"statusCreate\", 200)\r",
 									"\r",
 									"pm.collectionVariables.set(\"periodType\", \"1\");\r",
 									"pm.collectionVariables.set(\"description\", \"Nomina Enero 2021\");\r",
 									"pm.collectionVariables.set(\"year\", \"2021\");\r",
-									"pm.collectionVariables.set(\"month\", \"\");"
+									"pm.collectionVariables.set(\"month\", \"1\");"
 								],
 								"type": "text/javascript"
 							}
@@ -135,7 +137,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "f7ef9f06-a17a-43c5-8afe-ef4b336cad8c",
+								"id": "e8c9684b-9fce-4928-b86b-08ba5df70770",
 								"exec": [
 									"//Se crean la variables\r",
 									"var testStatus = pm.variables.get(\"statusCreate\")\r",
@@ -146,19 +148,20 @@
 									"\r",
 									"//obtiene el id del la nomina\r",
 									"pm.collectionVariables.set(\"payrollPeriodId\", bodyData.PayrollPeriodID);\r",
+									"\r",
 									"if (pm.collectionVariables.get(\"payrollPeriodId\") == null) {\r",
-									"    if (pm.iterationData.get(\"status\") == 200) {\r",
+									"    if (pm.iterationData.get(\"statusCreate\") == 200) {\r",
 									"        pm.collectionVariables.set(\"payrollPeriodId\", 1)\r",
 									"    } else {\r",
 									"        pm.collectionVariables.set(\"payrollPeriodId\", pm.iterationData.get(\"payrollPeriodIdTest\"))\r",
 									"\r",
 									"    }\r",
 									"\r",
-									"    console.log(\"ID = \" + pm.collectionVariables.get(\"payrollPeriodId\"))\r",
+									"    console.log(\"payrollPeriodIdTest = \" + pm.collectionVariables.get(\"payrollPeriodId\"))\r",
 									"}\r",
 									"\r",
-									"pm.test(\"Response time is less than 2000ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+									"pm.test(\"Response time is less than 4000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(4000);\r",
 									"});\r",
 									"\r",
 									"// Validando miltiples status\r",
@@ -224,19 +227,24 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "01bf7d08-51ff-48b4-b6f4-54a47e78560e",
+								"id": "6bfe5a75-11ff-4342-a144-bf1a38050bc9",
 								"exec": [
-									"pm.collectionVariables.set(\"status\", 200)\r",
+									"var jsonTest = {\"employeesData\":[{\"usersCode\":\"34424\",\"identification\":\"11366507\",\"contractCode\":2151,\"fullName\":\"JUAN ORLANDO PARDO BELTRAN\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34466\",\"identification\":\"16934849\",\"contractCode\":2190,\"fullName\":\"MARIO ANDRES GAMBOA BERMEO\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34432\",\"identification\":\"17344630\",\"contractCode\":2159,\"fullName\":\"aLIRIO SaNaBrIa\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34433\",\"identification\":\"17345090\",\"contractCode\":2160,\"fullName\":\"HECTOR JAVIER ROJAS\",\"totalRevenue\":\"7500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"7500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"7500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34434\",\"identification\":\"17546920\",\"contractCode\":2161,\"fullName\":\"OVIDIO GOMEZ GARCIA\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105131,\"conceptName\":\"[C_SalarioIntegral]\",\"description\":\"Salario Integral\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34435\",\"identification\":\"18144198\",\"contractCode\":2162,\"fullName\":\"CARLOS ALFONSO MATA\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105069,\"conceptName\":\"[C_CuotaSostenimiento]\",\"description\":\"Cuota de sostenimiento\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34436\",\"identification\":\"18145489\",\"contractCode\":2163,\"fullName\":\"LUIS FELIPE VILLOTA\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34437\",\"identification\":\"18146149\",\"contractCode\":2164,\"fullName\":\"ORLANDO LEONEL GAVIRIA LOPEZ\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34438\",\"identification\":\"18147296\",\"contractCode\":2165,\"fullName\":\"HUGO ANDRES SALAZAR\",\"totalRevenue\":\"1000000\",\"totalDeduction\":\"0\",\"totalNeto\":\"1000000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"1000000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34439\",\"identification\":\"19772116\",\"contractCode\":2166,\"fullName\":\"WASHINTON HERRERA CAMACHO\",\"totalRevenue\":\"6500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"6500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"6500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34440\",\"identification\":\"23913269\",\"contractCode\":2167,\"fullName\":\"OLGA MARIA ESTUPIÑAN ESTUPIÑAN\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34425\",\"identification\":\"12130411\",\"contractCode\":2152,\"fullName\":\"EIDER GRANADOS HERRERA\",\"totalRevenue\":\"600000\",\"totalDeduction\":\"0\",\"totalNeto\":\"600000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"600000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34441\",\"identification\":\"26607614\",\"contractCode\":2168,\"fullName\":\"YUSBENI CERQUERA\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34442\",\"identification\":\"27399910\",\"contractCode\":2169,\"fullName\":\"OLINDA CABEZAS\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34443\",\"identification\":\"32786877\",\"contractCode\":2170,\"fullName\":\"BELQUIS TRILLOS\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34444\",\"identification\":\"32939819\",\"contractCode\":2171,\"fullName\":\"MILENA DEL CARMEN CONSUEGRA\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34445\",\"identification\":\"34570101\",\"contractCode\":2172,\"fullName\":\"MARILUT DIAZ HURTADO\",\"totalRevenue\":\"950000\",\"totalDeduction\":\"0\",\"totalNeto\":\"950000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"950000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34446\",\"identification\":\"36287917\",\"contractCode\":2173,\"fullName\":\"ANA MILENA VARGAS MUÑOZ\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34447\",\"identification\":\"41170691\",\"contractCode\":2174,\"fullName\":\"MARY CRUZ CORAL SALCEDO\",\"totalRevenue\":\"950000\",\"totalDeduction\":\"0\",\"totalNeto\":\"950000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"950000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34448\",\"identification\":\"45465017\",\"contractCode\":2175,\"fullName\":\"KATIA MARTINEZ ESCOBAR\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34449\",\"identification\":\"45586506\",\"contractCode\":2176,\"fullName\":\"DAILESTER GARCIA MENDOZA\",\"totalRevenue\":\"950000\",\"totalDeduction\":\"0\",\"totalNeto\":\"950000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"950000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34450\",\"identification\":\"52780607\",\"contractCode\":2177,\"fullName\":\"LEONOR ROCIO POLO TORRES\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34426\",\"identification\":\"12193547\",\"contractCode\":2153,\"fullName\":\"WILSON CAICEDO\",\"totalRevenue\":\"1250000\",\"totalDeduction\":\"0\",\"totalNeto\":\"1250000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"1250000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34451\",\"identification\":\"52951911\",\"contractCode\":2178,\"fullName\":\"MERY ROCIO NIÑO BELTRAN\",\"totalRevenue\":\"950000\",\"totalDeduction\":\"0\",\"totalNeto\":\"950000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"950000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34452\",\"identification\":\"55165958\",\"contractCode\":2179,\"fullName\":\"MARIA DEYANIRA MENDEZ\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34453\",\"identification\":\"55190742\",\"contractCode\":2180,\"fullName\":\"LUZ ANGELA POLANIA TORRES\",\"totalRevenue\":\"950000\",\"totalDeduction\":\"0\",\"totalNeto\":\"950000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"950000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34454\",\"identification\":\"1001867654\",\"contractCode\":2181,\"fullName\":\"MARIA ALEJANDRA VARGAS ARAUJO\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34456\",\"identification\":\"1010222995\",\"contractCode\":2183,\"fullName\":\"ANGELA JOHANNA CHOCONTA TORRES\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34457\",\"identification\":\"1013652757\",\"contractCode\":2184,\"fullName\":\"JUAN ESTEBAN CASTRO RODRIGUEZ\",\"totalRevenue\":\"438902\",\"totalDeduction\":\"0\",\"totalNeto\":\"438902\",\"novelties\":[{\"conceptCode\":105131,\"conceptName\":\"[C_SalarioIntegral]\",\"description\":\"Salario Integral\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"438902\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34458\",\"identification\":\"1015996035\",\"contractCode\":2185,\"fullName\":\"KELLY MALENA PEREZ SUAREZ\",\"totalRevenue\":\"1350000\",\"totalDeduction\":\"0\",\"totalNeto\":\"1350000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"1350000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34459\",\"identification\":\"1015996845\",\"contractCode\":2186,\"fullName\":\"ANGELA MORENO GARAVITO\",\"totalRevenue\":\"438902\",\"totalDeduction\":\"0\",\"totalNeto\":\"438902\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"438902\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34460\",\"identification\":\"1016097775\",\"contractCode\":2187,\"fullName\":\"KAREN YISED GAONA CARDENAS\",\"totalRevenue\":\"8339500\",\"totalDeduction\":\"0\",\"totalNeto\":\"8339500\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"8339500\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34465\",\"identification\":\"12196014\",\"contractCode\":2189,\"fullName\":\"ERVI CAICEDO SIERRA\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34461\",\"identification\":\"1018409643\",\"contractCode\":2188,\"fullName\":\"FADHUL YAVER QUINTERO\",\"totalRevenue\":\"11000000\",\"totalDeduction\":\"0\",\"totalNeto\":\"11000000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"11000000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34467\",\"identification\":\"1019131090\",\"contractCode\":2191,\"fullName\":\"ALEXANDRA CORTES\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34469\",\"identification\":\"1020761789\",\"contractCode\":2193,\"fullName\":\"CARLOS DIAZ\",\"totalRevenue\":\"950000\",\"totalDeduction\":\"0\",\"totalNeto\":\"950000\",\"novelties\":[{\"conceptCode\":105069,\"conceptName\":\"[C_CuotaSostenimiento]\",\"description\":\"Cuota de sostenimiento\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"950000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34427\",\"identification\":\"12196168\",\"contractCode\":2154,\"fullName\":\"IÑAQUI FAGÜA MONGÜI DE LA HOZ\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34428\",\"identification\":\"12196888\",\"contractCode\":2155,\"fullName\":\"ÉRNESTO LOPÉZ ESCARPETA\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34429\",\"identification\":\"14696746-9\",\"contractCode\":2156,\"fullName\":\"JARVI BALVINO URREGO BENAVIDEZ\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34430\",\"identification\":\"14698408\",\"contractCode\":2157,\"fullName\":\"LEIDER ANDRES VERGARA PRADO\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34431\",\"identification\":\"16272651\",\"contractCode\":2158,\"fullName\":\"LEIDER ANDRES VERGARA PRADO\",\"totalRevenue\":\"500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34471\",\"identification\":\"10612613\",\"contractCode\":2195,\"fullName\":\"Anyela Rivera\",\"totalRevenue\":\"1100000\",\"totalDeduction\":\"0\",\"totalNeto\":\"1100000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"1100000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34551\",\"identification\":\"205060\",\"contractCode\":2197,\"fullName\":\"empleado LNR\",\"totalRevenue\":\"1500000\",\"totalDeduction\":\"0\",\"totalNeto\":\"1500000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"1500000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]},{\"usersCode\":\"34473\",\"identification\":\"5995959\",\"contractCode\":2196,\"fullName\":\"jose lopez\",\"totalRevenue\":\"700000\",\"totalDeduction\":\"0\",\"totalNeto\":\"700000\",\"novelties\":[{\"conceptCode\":105068,\"conceptName\":\"[C_Salario]\",\"description\":\"Sueldo\",\"usersValue\":\"15\",\"valueType\":0,\"value\":\"700000\",\"natureType\":0,\"isDefault\":true,\"factor\":null},{\"conceptCode\":105142,\"conceptName\":\"[C_IC]\",\"description\":\"Intereses de cesantías\",\"usersValue\":\"0\",\"valueType\":0,\"value\":\"0\",\"natureType\":0,\"isDefault\":false,\"factor\":null}],\"calendarNovelties\":[]}],\"periodTotals\":{\"totalRevenue\":\"59917304\",\"totalDeduction\":\"0\",\"totalNeto\":\"59917304\",\"totalBonus\":null}}\r",
+									"jsonTest = JSON.stringify(jsonTest)\r",
 									"\r",
-									"pm.collectionVariables.set(\"propertyConcept\", \"value\");\r",
+									"pm.collectionVariables.set(\"statusGetPayroll\", 200);\r",
 									"\r",
-									"pm.collectionVariables.set(\"propertyEmployees\", \"fullName\");\r",
+									"pm.collectionVariables.set(\"jsonTest\" , jsonTest);\r",
 									"\r",
-									"pm.collectionVariables.set(\"totalRevenue\", '\"totalRevenue\":\"65867780\"');\r",
+									"pm.collectionVariables.set(\"index\",\"IndexByPropertiesByIndex\");\r",
 									"\r",
-									"pm.collectionVariables.set(\"totalDeduction\", '\"totalDeduction\":\"0\"');\r",
+									"pm.collectionVariables.set(\"pathlevel\", 'employeesData');\r",
 									"\r",
-									"pm.collectionVariables.set(\"totalNeto\", '\"totalNeto\":\"65867780\"');\r",
+									"pm.collectionVariables.set(\"propertyList\", \"description\");\r",
+									"\r",
+									"pm.collectionVariables.set(\"levelNameIndexByProperties\", \"novelties\");\r",
+									"\r",
+									"\r",
 									"\r",
 									""
 								],
@@ -246,135 +254,203 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "559ae750-97b0-4ed1-9e5a-5ee31372b133",
+								"id": "f120d1ea-b6bc-404d-85cf-bb47fc159f89",
 								"exec": [
-									"//Se crean la variables\r",
-									"var testStatus = pm.variables.get(\"statusGetPayroll\")\r",
-									"\r",
-									"//carga el body como Json\r",
+									"//Captura el código de estado que viene en el archivo\r",
+									"testStatus = pm.variables.get(\"statusGetPayroll\");\r",
+									"//Obtiene el json de respuesta de la ejecución\r",
 									"if (responseBody != \"\") {\r",
-									"    bodyData = JSON.parse(responseBody);\r",
+									"    responseData = JSON.parse(responseBody);\r",
 									"}\r",
-									"\r",
-									"//carga el csv con el json de una nomina\r",
-									"if (pm.variables.get(\"json\") != \"\") {\r",
-									"    csvData = JSON.parse(pm.variables.get(\"json\"));\r",
+									"//Obtiene el json de respuesta del archivo\r",
+									"if (pm.variables.get(\"jsonTest\") != \"\") {\r",
+									"    csvResponseBody = JSON.parse(pm.variables.get(\"jsonTest\"));\r",
 									"}\r",
+									"//Obtiene el array con las propiedades que se verificarán\r",
+									"propertyList = (pm.variables.get(\"propertyList\")).split(\",\");\r",
 									"\r",
-									"//carga el csv con el json de valor del concepto a validar\r",
-									"propertyConcept = pm.variables.get(\"propertyConcept\");\r",
+									"pathlevel = pm.variables.get(\"pathlevel\");\r",
+									"levelNameIndexByProperties = pm.variables.get(\"levelNameIndexByProperties\");\r",
 									"\r",
-									"propertyEmployees = pm.variables.get(\"propertyEmployees\");\r",
+									"index = pm.variables.get(\"index\");\r",
+									"//contador\r",
+									"try {\r",
+									"    var csvRespondeLength = Object.keys(getValueJSON(pathlevel, csvResponseBody)).length;\r",
 									"\r",
-									"//carga el csv con el json del ingreso total de una nomina\r",
-									"totalRevenue = pm.variables.get(\"totalRevenue\");\r",
+									"} catch (e) { console.log(\"Contador csvRespondeLength Null\") }\r",
 									"\r",
-									"//carga el csv con el json del total deduccion de una nomina\r",
-									"totalDeduction = pm.variables.get(\"totalDeduction\");\r",
+									"/******************************\r",
+									"        Funciones\r",
+									" *****************************/\r",
 									"\r",
-									"//carga el csv con el json del ingreso total de una nomina\r",
-									"totalNeto = pm.variables.get(\"totalNeto\");\r",
+									"function getValueJSON(nameKey, objRef) {\r",
 									"\r",
+									"    var arrKeys = nameKey.split('.');\r",
+									"    var objValue = { ...objRef };\r",
+									"    var propName = '';\r",
+									"    var propArrIndex = 0;\r",
 									"\r",
-									"//cuenta el numero de empledos en el body\r",
-									"function count() {\r",
-									"    var count = 0\r",
-									"    for (var i in bodyData.employeesData) {\r",
-									"        count = count + 1\r",
-									"    }\r",
-									"    return count\r",
-									"}\r",
+									"    for (i = 0; i < arrKeys.length; i++) {\r",
 									"\r",
+									"        propName = arrKeys[i];\r",
 									"\r",
-									"//cuenta el numero de empledos en el csv\r",
-									"function councsv() {\r",
-									"    var councsv = 0\r",
-									"    for (var i in csvData.employeesData) {\r",
-									"        councsv = councsv + 1\r",
-									"    }\r",
-									"    return councsv\r",
+									"        if (propName.indexOf('[') > -1) {\r",
 									"\r",
-									"}\r",
+									"            propArrIndex = propName.match(/\\[([^)]+)\\]/)[1];\r",
+									"            propName = propName.substring(0, propName.indexOf('['));\r",
+									"            objValue = objValue[propName][propArrIndex];\r",
 									"\r",
-									"\r",
-									"//cuenta el numero de conceptos de una empleados\r",
-									"function count_Novelties(No_employee) {\r",
-									"    var countNovelties = 0\r",
-									"    for (var i in bodyData.employeesData[No_employee].novelties) {\r",
-									"        countNovelties = countNovelties + 1\r",
-									"    }\r",
-									"    return countNovelties;\r",
-									"}\r",
-									"\r",
-									"// recorre el json y valida las novedades en el log sale el empleado incorrecto\r",
-									"function validate_Concept(propertyConcept) {\r",
-									"    var i = 0;\r",
-									"    do {\r",
-									"        for (var j = 0; j < count_Novelties(i); j++) {\r",
-									"            if (bodyData.employeesData[i].novelties[j][propertyConcept] !=\r",
-									"                csvData.employeesData[i].novelties[j][propertyConcept]) {\r",
-									"                employeesFail = csvData.employeesData[i].fullName + \" Esta incorrecto\"\r",
-									"                console.log(employeesFail)\r",
-									"                return false\r",
-									"\r",
-									"            }\r",
-									"        } i++\r",
-									"    } while (i <= councsv() - 1)\r",
-									"    return true;\r",
-									"}\r",
-									"\r",
-									"\r",
-									"function validate_Names(propertyEmployees) {\r",
-									"    var i = 0\r",
-									"    do {\r",
-									"        bodyFullName = bodyData.employeesData[i][propertyEmployees]\r",
-									"        csvFullName = csvData.employeesData[i][propertyEmployees]\r",
-									"        if (bodyFullName != csvFullName) {\r",
-									"            namesFail = csvData.employeesData[i].fullName + \" Esta incorrecto\"\r",
-									"            console.log(namesFail)\r",
-									"            return false\r",
 									"        }\r",
-									"        i++\r",
-									"    } while (i < councsv() - 1)\r",
-									"    return true;\r",
+									"\r",
+									"        else {\r",
+									"\r",
+									"            objValue = objValue[propName];\r",
+									"\r",
+									"        }\r",
+									"\r",
+									"    }\r",
+									"\r",
+									"    return objValue;\r",
+									"\r",
+									"}\r",
+									"\r",
+									"//Verifica qué función se debe ejecutar para verificar la información \r",
+									"function selectFunctByIndex() {\r",
+									"    switch (index) {\r",
+									"        case 'byProperties':\r",
+									"            return validateByProperties();\r",
+									"\r",
+									"        case 'byIndex':\r",
+									"            return validateByIndex();\r",
+									"\r",
+									"        case 'indexByProperties':\r",
+									"            return validateIndexByProperties();\r",
+									"\r",
+									"        case 'IndexByPropertiesByIndex':\r",
+									"            return validateIndexByPropertiesByIndex();\r",
+									"\r",
+									"        default:\r",
+									"            return \"Opcion no definida verifique los datos\"\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"//Función para verificar la data en los niveles que No son arrays\r",
+									"function validateByProperties() {\r",
+									"    console.log(\"validateByProperties\")\r",
+									"    var responBody, responCsvBody;\r",
+									"    for (propierty in propertyList) {\r",
+									"        //variables para recorrer la respuesta del request y la respuesta del csv\r",
+									"        responBody = getValueJSON(pathlevel + \".\" + propertyList[propierty], responseData);\r",
+									"        responCsvBody = getValueJSON(pathlevel + \".\" + propertyList[propierty], csvResponseBody);\r",
+									"\r",
+									"        if (responBody != responCsvBody) {\r",
+									"            report = (\"el valor no coincide: \" + propertyList[propierty] + \" Valor response: \" + responBody + \" valor csv: \" + responCsvBody);\r",
+									"            pm.collectionVariables.set(\"reporte\", false);\r",
+									"            return report;\r",
+									"        }\r",
+									"        else {\r",
+									"            pm.collectionVariables.set(\"reporte\", true);\r",
+									"        }\r",
+									"    }\r",
+									"    return (\"es correcta\");\r",
+									"}\r",
+									"\r",
+									"function validateByIndex() {\r",
+									"    console.log(\"validateByIndex\")\r",
+									"\r",
+									"    var i = 0;\r",
+									"    var responBody, responCsvBody;\r",
+									"    do {\r",
+									"        for (propierty in propertyList) {\r",
+									"            //variables para recorrer la respuesta del request y la respuesta del csv\r",
+									"            responBody = getValueJSON(pathlevel + \"[\" + i + \"].\" + propertyList[propierty], responseData);\r",
+									"            responCsvBody = getValueJSON(pathlevel + \"[\" + i + \"].\" + propertyList[propierty], csvResponseBody);\r",
+									"\r",
+									"            if (responBody != responCsvBody) {\r",
+									"                report = (\"el valor no coincide: \" + propertyList[propierty] + \" Valor response: \" + responBody + \" valor csv: \" + responCsvBody);\r",
+									"                pm.collectionVariables.set(\"reporte\", false);\r",
+									"                return report;\r",
+									"            }\r",
+									"            else {\r",
+									"                pm.collectionVariables.set(\"reporte\", true);\r",
+									"            }\r",
+									"        }\r",
+									"        i++;\r",
+									"    } while (i < csvRespondeLength)\r",
+									"    return (\"es correcta\");\r",
+									"}\r",
+									"\r",
+									"function validateIndexByProperties() {\r",
+									"    console.log(\"validateIndexByProperties\")\r",
+									"\r",
+									"    var i = 0;\r",
+									"    var responBody, responCsvBody;\r",
+									"    do {\r",
+									"        for (propierty in propertyList) {\r",
+									"            //variables para recorrer la respuesta del request y la respuesta del csv\r",
+									"            responBody = getValueJSON(pathlevel + \"[\" + i + \"].\" + levelNameIndexByProperties + \".\" + propertyList[propierty], responseData);\r",
+									"            responCsvBody = getValueJSON(pathlevel + \"[\" + i + \"].\" + levelNameIndexByProperties + \".\" + propertyList[propierty], csvResponseBody);\r",
+									"            console.log(\"responBody = \" + responBody + \" != \" + responCsvBody + \" = responCsvBody\")\r",
+									"            if (responBody != responCsvBody) {\r",
+									"                report = (\"el valor no coincide: \" + propertyList[propierty] + \" Valor response: \" + responBody + \" valor csv: \" + responCsvBody);\r",
+									"                pm.collectionVariables.set(\"reporte\", false);\r",
+									"                return report;\r",
+									"            }\r",
+									"            else {\r",
+									"                pm.collectionVariables.set(\"reporte\", true);\r",
+									"            }\r",
+									"        }\r",
+									"        i++;\r",
+									"    } while (i < csvRespondeLength)\r",
+									"    return (\"es correcta\");\r",
+									"}\r",
+									"\r",
+									"function validateIndexByPropertiesByIndex() {\r",
+									"    console.log(\"validateIndexByPropertiesByIndex\")\r",
+									"    var i = 0;\r",
+									"    var responBody, responCsvBody;\r",
+									"    do {\r",
+									"        try {\r",
+									"            var csvRespondeLengthTwo = Object.keys(getValueJSON(pathlevel + \"[\" + i + \"].\" + levelNameIndexByProperties, csvResponseBody)).length;\r",
+									"        } catch (e) { console.log(\"Contador csvRespondeLength Null\") }\r",
+									"\r",
+									"        for (var j = 0; j < csvRespondeLengthTwo; j++) {\r",
+									"            for (propierty in propertyList) {\r",
+									"                //variables para recorrer la respuesta del request y la respuesta del csv\r",
+									"                responBody = getValueJSON(pathlevel + \"[\" + i + \"].\" + levelNameIndexByProperties + \"[\" + j + \"].\" + propertyList[propierty], responseData);\r",
+									"                responCsvBody = getValueJSON(pathlevel + \"[\" + i + \"].\" + levelNameIndexByProperties + \"[\" + j + \"].\" + propertyList[propierty], csvResponseBody);\r",
+									"                if (responBody != responCsvBody) {\r",
+									"                    report = (\"el valor no coincide: \" + propertyList[propierty] + \" Valor response: \" + responBody + \" valor csv: \" + responCsvBody);\r",
+									"                    pm.collectionVariables.set(\"reporte\", false);\r",
+									"                    return report;\r",
+									"                }\r",
+									"                else {\r",
+									"                    pm.collectionVariables.set(\"reporte\", true);\r",
+									"                }\r",
+									"            }\r",
+									"        }\r",
+									"        i++;\r",
+									"    } while (i < csvRespondeLength)\r",
+									"    return (\"es correcta\");\r",
 									"}\r",
 									"\r",
 									"\r",
-									"pm.test(\"Response time is less than 1000ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
-									"});\r",
-									"\r",
-									"// Validando miltiples status\r",
-									"pm.test(\"Status code is \" + testStatus, function () {\r",
+									"//Test que verifica el código de estado\r",
+									"pm.test(\"Código de estado es \" + testStatus, function () {\r",
 									"    pm.response.to.have.status(testStatus);\r",
 									"});\r",
 									"\r",
+									"//Test para verificar el tiempo de respuesta\r",
+									"pm.test(\"Tiempo de respuesta es menor a 4500\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(4500);\r",
+									"});\r",
+									"\r",
 									"if (testStatus == 200) {\r",
-									"    // valida totales de nomina\r",
-									"    pm.test(\"Validation of totals\", function () {\r",
-									"        pm.expect(pm.response.text()).to.include(totalRevenue);\r",
-									"        pm.expect(pm.response.text()).to.include(totalDeduction);\r",
-									"        pm.expect(pm.response.text()).to.include(totalNeto);\r",
+									"    //Test para velificar la información\r",
+									"    pm.test(\"Verificación de la información \" + selectFunctByIndex(), function () {\r",
+									"        pm.expect(pm.collectionVariables.get(\"reporte\")).to.eql(true);\r",
 									"    });\r",
-									"\r",
-									"    //valida cantidad de empleados que deben estar en la nomina\r",
-									"    pm.test(\"Number of employees is correct\", function () {\r",
-									"        pm.expect(count()).to.eql(councsv());\r",
-									"    });\r",
-									"\r",
-									"    //valida las propiedades del empreado\r",
-									"    pm.test(\"Validate the \" + propertyEmployees + \" of the employee \", function () {\r",
-									"        pm.expect(validate_Names(propertyEmployees)).to.eql(true);\r",
-									"    });\r",
-									"\r",
-									"    //valida las propiedades de los conceptos por empleados\r",
-									"    pm.test(\"Validate the concept \" + propertyConcept + \" of the employees \", function () {\r",
-									"        pm.expect(validate_Concept(propertyConcept)).to.eql(true);\r",
-									"    });\r",
-									"\r",
-									"\r",
-									"}\r",
-									""
+									"}"
 								],
 								"type": "text/javascript"
 							}
@@ -476,18 +552,29 @@
 					"name": "DeletePayroll",
 					"event": [
 						{
-							"listen": "prerequest",
+							"listen": "test",
 							"script": {
-								"id": "bab40f92-6d7b-4de9-be45-793fd5a56eb5",
+								"id": "740e34e8-fe3e-4ea6-a2cd-7bfb9e3ad1c4",
 								"exec": [
+									"//Se crean la variables\r",
+									"var testStatus = pm.variables.get(\"statusDelete\")\r",
+									"var stringResponse = pm.variables.get(\"string\")\r",
 									"\r",
-									"//pm.collectionVariables.set(\"string\",\"The value 'aaaaa' is not valid.\")\r",
+									"pm.test(\"Response time is less than 4000ms\", function () {\r",
+									"    pm.expect(pm.response.responseTime).to.be.below(4000);\r",
+									"});\r",
 									"\r",
-									"pm.collectionVariables.set(\"string\",\"Payroll Deleted\")\r",
+									"//Se valida las respuestas del body\r",
+									"if (pm.collectionVariables.get(\"payrollPeriodId\") == null) {\r",
+									"    pm.test(\"Body matches string \" + stringResponse, function () {\r",
+									"        pm.expect(pm.response.text()).to.include(stringResponse);\r",
+									"    });\r",
+									"}\r",
 									"\r",
-									"//pm.collectionVariables.set(\"string\",\"Bad Request\")\r",
-									"\r",
-									"pm.collectionVariables.set(\"status\", 200)\r",
+									"//Se valida los diferentes status\r",
+									"pm.test(\"Status code is \" + testStatus, function () {\r",
+									"    pm.response.to.have.status(testStatus);\r",
+									"});\r",
 									"\r",
 									"\r",
 									""
@@ -496,30 +583,21 @@
 							}
 						},
 						{
-							"listen": "test",
+							"listen": "prerequest",
 							"script": {
-								"id": "45a09843-5dcf-4d68-86ca-43fbe053fc93",
+								"id": "9a6c9946-a9ca-4f7a-b5ac-42f8adcb1f05",
 								"exec": [
-									"//Se crean la variables\r",
-									"var testStatus = pm.variables.get(\"statusDelete\")\r",
-									"var stringResponse = pm.variables.get(\"string\")\r",
 									"\r",
-									"pm.test(\"Response time is less than 500ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
-									"});\r",
+									"//pm.collectionVariables.set(\"string\",\"The value 'aaaaa' is not valid.\")\r",
 									"\r",
-									"//Se valida los diferentes status\r",
-									"pm.test(\"Status code is \" + testStatus, function () {\r",
-									"    pm.response.to.have.status(testStatus);\r",
-									"});\r",
+									"pm.collectionVariables.set(\"string\",\"Payroll Deleted\")\r",
+									"\r",
+									"//pm.collectionVariables.set(\"string\",\"Bad Request\")\r",
+									"\r",
+									"pm.collectionVariables.set(\"statusDelete\", 200)\r",
 									"\r",
 									"\r",
-									"//Se valida las respuestas del body\r",
-									"if (pm.collectionVariables.get(\"payrollPeriodId\") == null) {\r",
-									"    pm.test(\"Body matches string \" + stringResponse, function () {\r",
-									"        pm.expect(pm.response.text()).to.include(stringResponse);\r",
-									"    });\r",
-									"}"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -569,7 +647,7 @@
 		{
 			"listen": "prerequest",
 			"script": {
-				"id": "c79fa0b5-6023-45a5-94f6-3404bcbc94cd",
+				"id": "cb7f0680-e241-4130-97c3-b63a81a7a9d8",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -579,7 +657,7 @@
 		{
 			"listen": "test",
 			"script": {
-				"id": "f9d8bc52-81fb-4fd0-876c-01a911b0a1e7",
+				"id": "336aebc6-65c6-42b9-9f77-8e3603c7ace3",
 				"type": "text/javascript",
 				"exec": [
 					""
@@ -589,98 +667,153 @@
 	],
 	"variable": [
 		{
-			"id": "4bb68781-c8ec-451d-b606-a90f9dc99b36",
+			"id": "fa80eedd-9f2f-4366-b74d-3c20b425493b",
 			"key": "payrollPeriodId",
 			"value": "Variable de response"
 		},
 		{
-			"id": "74a6e778-454e-4514-be4c-e2f5ed952edc",
+			"id": "77a9566a-d297-4ef6-931b-170dc739616c",
 			"key": "json",
 			"value": ""
 		},
 		{
-			"id": "0dbcb597-8387-4239-9520-b7f08b82d679",
+			"id": "027b9bfd-3141-4ec2-9377-f8500e8e4cdd",
 			"key": "totalRevenue",
 			"value": ""
 		},
 		{
-			"id": "659bdb34-b731-4330-8d77-b31e549afa1e",
+			"id": "c5f81eb7-1684-4fe3-959c-666d5d4f780a",
 			"key": "totalDeduction",
 			"value": ""
 		},
 		{
-			"id": "23e36ba2-be95-4dd5-b9e9-915dce10cd5b",
+			"id": "382502aa-3ee1-47c9-b27b-16b7b2f166f3",
 			"key": "totalNeto",
 			"value": ""
 		},
 		{
-			"id": "17cc52c6-f3b1-432a-a16e-0c544139bc40",
+			"id": "31358164-7636-48b7-9c31-2dd345bf6d40",
 			"key": "password",
 			"value": ""
 		},
 		{
-			"id": "cb7a36d8-88fa-4a6f-b3da-c2b803e8d8bd",
+			"id": "42dab3ba-31f7-4ccb-848f-3d7169947c6d",
 			"key": "username",
 			"value": ""
 		},
 		{
-			"id": "0e999a55-f2ea-44cd-94eb-a351a17b108f",
+			"id": "03ca42ac-e5b7-478c-9282-a9ef23b7bf81",
 			"key": "periodType",
 			"value": ""
 		},
 		{
-			"id": "c7ea3714-2586-4331-8a1e-46a6ed761981",
+			"id": "80e83ab9-6512-4a48-967a-6dd0e3ec1709",
 			"key": "description",
 			"value": ""
 		},
 		{
-			"id": "e6e6f39c-c9d3-47f0-a95e-c1c5218659c5",
+			"id": "87b2a256-46bc-40cc-a1f4-c2d08e769391",
 			"key": "year",
 			"value": ""
 		},
 		{
-			"id": "2993adce-ef23-4602-bf3b-b4ef6a51af8a",
+			"id": "bc7cd9d9-9f15-4081-985f-b639f0884880",
 			"key": "month",
 			"value": ""
 		},
 		{
-			"id": "e0b1e122-5b6f-4797-8f1b-9a0a6637628b",
+			"id": "5f67b58d-ba7f-4fca-bb52-2877e2462ab1",
 			"key": "propertyEmployees",
 			"value": ""
 		},
 		{
-			"id": "bd4d63cf-2c27-482f-b955-be556e2b9be6",
+			"id": "37407c93-ca00-402a-9f45-debb5c8bd251",
 			"key": "propertyConcept",
 			"value": ""
 		},
 		{
-			"id": "dda3c7e4-de46-4814-8d41-75a26c30d146",
+			"id": "152e0c7f-f941-464e-b6a8-5feb4a26f801",
 			"key": "errors",
 			"value": ""
 		},
 		{
-			"id": "b473fb0e-28b0-411e-a117-a9b68f455104",
-			"key": "status",
-			"value": ""
-		},
-		{
-			"id": "59655342-2608-4821-b088-de0169fc0e92",
+			"id": "9a2a2127-6d9a-41ae-97a6-c5c9f4241408",
 			"key": "stringResponse",
 			"value": ""
 		},
 		{
-			"id": "76da0f32-f89e-409f-b32a-6ed725c2fff5",
+			"id": "e02e69b1-d0e2-473b-843f-8276b72ae3cf",
 			"key": "stringResponseCreate",
 			"value": ""
 		},
 		{
-			"id": "90188e8b-fad6-4f0a-ac29-afdd2d8ae241",
+			"id": "b27f3bed-375a-4ada-a867-06424606ff07",
 			"key": "payrollPeriodIdTest",
 			"value": ""
 		},
 		{
-			"id": "6ef7c4f2-8e47-4c7f-9d49-1fbe5c6b1767",
+			"id": "569de3c8-ccfd-446e-8d71-81593adf7328",
 			"key": "string",
+			"value": ""
+		},
+		{
+			"id": "08ad4b64-444a-4ba1-b296-11db6030e9a6",
+			"key": "status",
+			"value": ""
+		},
+		{
+			"id": "8dc6fe36-f930-4c8b-a7c8-adabfc7c042f",
+			"key": "statusDelete",
+			"value": ""
+		},
+		{
+			"id": "c2d00c76-ddd7-4444-9b61-211cf039c8aa",
+			"key": "statusCreate",
+			"value": ""
+		},
+		{
+			"id": "1ad5c890-6376-42a3-8999-8b7ad87d9d04",
+			"key": "statusGetPayroll",
+			"value": ""
+		},
+		{
+			"id": "f9b696ae-03ee-453c-add8-a977b533ae0c",
+			"key": "index",
+			"value": ""
+		},
+		{
+			"id": "6f70c483-7651-4c43-9d35-0ec9f49a4a7e",
+			"key": "levelName1",
+			"value": ""
+		},
+		{
+			"id": "fdc64864-99e2-4ec5-8188-76c5b45cec57",
+			"key": "jsonTest",
+			"value": ""
+		},
+		{
+			"id": "06528471-ffb8-4855-ad2d-6db7b69c18b9",
+			"key": "propertyList",
+			"value": ""
+		},
+		{
+			"id": "0db32530-1732-4b2b-8bf7-1ccced8c204f",
+			"key": "reporte",
+			"value": ""
+		},
+		{
+			"id": "c7750e09-c75f-43c5-bc12-db0ed4056866",
+			"key": "levelName",
+			"value": ""
+		},
+		{
+			"id": "d82f1e00-91c7-4d40-bb4b-7811cdb2b666",
+			"key": "levelNameIndexByProperties",
+			"value": ""
+		},
+		{
+			"id": "34dbeefc-8f31-47d5-9fc0-6ac98d95d717",
+			"key": "pathlevel",
 			"value": ""
 		}
 	],
