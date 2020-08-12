@@ -14,10 +14,11 @@ steps:
 - task: NewmanPostman@4
   inputs:
     collectionSourceType: 'file'
-    collectionFileSource: '$(System.DefaultWorkingDirectory)/Postman'
+    collectionFileSource: '$(System.DefaultWorkingDirectory)/Postman/PayrollLiquidator_V2.postman_collection.json'
     dataFile: 'Nominacsv1_V2.csv'
     numberOfIterations: 
     sslInsecure: true
     reporters: 'junit'
+
 
   
