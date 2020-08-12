@@ -14,16 +14,15 @@ steps:
   displayName: 'Install Newman'
   inputs:
     script: 'sudo npm install -g newman'
-
-- task: CmdLine@2
-  displayName: 'PayrollLiquidator Test Execution'
-  continueOnError: true
+- task: NewmanPostman@4
   inputs:
-    script: 'newman run PayrollLiquidator_V2.postman_collection.json -d Nominacsv1_V2.csv --insecure --reporters cli,junit --reporter-junit-export Results/junitReport.xml'
-    workingDirectory: '$(System.DefaultWorkingDirectory)/Postman'
+    collectionSourceType: 'file'
+    collectionFileSource: '$(System.DefaultWorkingDirectory)/Postman/PayrollLiquidator_V2.postman_collection.json'
+    dataFile: '$(System.DefaultWorkingDirectory)/Postman/Nominacsv1_V2.csv'
+    numberOfIterations: 
+    sslInsecure: true
+    reporters: 'junit'
+    environmentSourceType: 'None'
 
-- task: PublishTestResults@2
-  inputs:
-    testResultsFormat: 'JUnit'
-    testResultsFiles: 'Postman/Results/*.xml'
-    testRunTitle: 'PayrollLiquidator'
+
+  
