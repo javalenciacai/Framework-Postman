@@ -10,7 +10,10 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-
+- task: CmdLine@2
+  displayName: 'Install Newman'
+  inputs:
+    script: 'sudo npm install -g newman'
 - task: NewmanPostman@4
   inputs:
     collectionSourceType: 'file'
