@@ -24,5 +24,8 @@ steps:
     reporters: 'junit'
     environmentSourceType: 'None'
 
-
-  
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: 'Postman/Results/*.xml'
+    testRunTitle: 'PayrollLiquidator'
