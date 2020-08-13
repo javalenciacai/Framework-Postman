@@ -16,18 +16,14 @@ steps:
     script: 'sudo npm install -g newman'
 
 - task: CmdLine@2
-  displayName: 'Install htmlextra'
-  inputs:
-    script: 'npm install -g newman-reporter-htmlextra'
-- task: CmdLine@2
   displayName: 'PayrollLiquidator Test Execution'
   continueOnError: true
   inputs:
-    script: 'newman run PayrollLiquidator_V2.postman_collection.json -d Nominacsv1_V2.csv --insecure -r htmlextra --reporter-htmlextra-export ./results/report.html'
+    script: 'newman run PayrollLiquidator_V2.postman_collection.json -d Nominacsv1_V2.csv --insecure --reporters cli,junit --reporter-junit-export Results/junitReport.xml'
     workingDirectory: '$(System.DefaultWorkingDirectory)/Postman'
 
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'JUnit'
-    testResultsFiles: 'Postman/Results/*.html'
+    testResultsFiles: 'Postman/Results/*.xml'
     testRunTitle: 'PayrollLiquidator'
