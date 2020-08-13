@@ -29,10 +29,5 @@ steps:
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'JUnit'
-    testResultsFiles: 'Postman/Results/*.xml'
+    testResultsFiles: 'Postman/Results/*.html'
     testRunTitle: 'PayrollLiquidator'
-
-- task: NewmanPostman@4
-  inputs:
-    collectionSourceType: 'file'
-    reporters: 'htmlextra'
