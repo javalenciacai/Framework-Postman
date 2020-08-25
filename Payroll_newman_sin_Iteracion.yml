@@ -13,9 +13,9 @@ pool:
 
 steps:
 - task: CmdLine@2
-  displayName: 'Install Newman-Reporter'
+  displayName: 'Install Newman-Reporter-htmlextra'
   inputs:
-    script: 'npm install -g newman-reporter-htm' 
+    script: 'npm install -g newman-reporter-htmlextra'   
 - task: NewmanPostman@4
   inputs:    
     collectionSourceType: 'file'
