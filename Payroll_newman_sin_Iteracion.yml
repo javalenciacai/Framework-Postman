@@ -13,6 +13,10 @@ pool:
 
 steps:
 - task: CmdLine@2
+  displayName: 'Install Newman'
+  inputs:
+    script: 'npm install -g newman'   
+- task: CmdLine@2
   displayName: 'Install Newman-Reporter-htmlextra'
   inputs:
     script: 'npm install -g newman-reporter-htmlextra'   
