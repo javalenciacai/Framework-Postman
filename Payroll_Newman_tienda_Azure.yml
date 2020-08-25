@@ -13,7 +13,7 @@ steps:
   - task: NewmanPostman@4
     inputs:
       collectionSourceType: 'file'
-      collectionFileSource: '/Postman/PayrollLiquidator_V2.postman_collection.json'
+      collectionFileSource: 'Postman/PayrollLiquidator_V2.postman_collection.json'
       Contents: 
       environmentSourceType: 'none'
       dataFile: '/Postman/Nominacsv1_V2.csv'
