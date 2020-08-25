@@ -10,9 +10,14 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+
 steps:
-- task: NewmanPostman@4
+- task: CmdLine@2
+  displayName: 'Install Newman-Reporter'
   inputs:
+    script: 'npm install -g newman-reporter-htm' 
+- task: NewmanPostman@4
+  inputs:    
     collectionSourceType: 'file'
     collectionFileSource: 'Postman/PayrollLiquidator_V2.postman_collection.json'
     Contents: 
