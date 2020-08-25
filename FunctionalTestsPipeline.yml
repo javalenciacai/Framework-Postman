@@ -1,0 +1,30 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+
+steps:
+- task: CmdLine@2
+  displayName: 'Install Newman'
+  inputs:
+    script: 'sudo npm install -g newman'
+
+- task: CmdLine@2
+  displayName: 'PayrollLiquidator Test Execution'
+  continueOnError: true
+  inputs:
+    script: 'newman run PayrollLiquidator_V2.postman_collection.json -d Nominacsv.csv --insecure --reporters cli,junit --reporter-junit-export Results/junitReport.xml'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/Postman'
+
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: 'Postman/Results/*.xml'
+    testRunTitle: 'PayrollLiquidator'
