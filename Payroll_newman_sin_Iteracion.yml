@@ -21,12 +21,13 @@ steps:
     numberOfIterations: 
     reporters: 'html'
     reporterHtmlExport: 'Postman/reports'
-    htmlExtraReportTitle: 'Payroll'
     customReporter: 'intex.html'
 - task: UploadPostmanHtmlReport@1
   inputs:
     cwd: '$(System.DefaultWorkingDirectory)/Postman/reports'
     tabName: 'Postman Payroll'
+
+
 
 
     
