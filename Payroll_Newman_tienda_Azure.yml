@@ -16,5 +16,5 @@ steps:
       collectionFileSource: 'Postman/PayrollLiquidator_V2.postman_collection.json'
       Contents: 
       environmentSourceType: 'none'
-      dataFile: '/Postman/Nominacsv1_V2.csv'
+      dataFile: 'Postman/Nominacsv1_V2.csv'
 
