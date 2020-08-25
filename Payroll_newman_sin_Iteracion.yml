@@ -19,7 +19,11 @@ steps:
     environmentSourceType: 'none'
     dataFile: 'Postman/Nominacsv1_V2.csv'
     numberOfIterations: 
-    reporters: 'html'
+    reporters: 'htmlextra'
     reporterHtmlExport: 'Postman/reports'
     htmlExtraReportTitle: 'Payroll'
     customReporter: 'intex.html'
+- task: UploadPostmanHtmlReport@1
+  inputs:
+    cwd: '$(System.DefaultWorkingDirectory)/Postman/reports'
+    tabName: 'Postman Payroll'
