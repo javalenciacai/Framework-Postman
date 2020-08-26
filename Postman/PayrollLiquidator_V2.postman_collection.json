@@ -305,6 +305,7 @@
 									"            return validateIndexByPropertiesByIndex();\r",
 									"\r",
 									"        default:\r",
+									"            pm.collectionVariables.set(\"reporte\", false);\r",
 									"            return \"Opcion no definida verifique los datos\"\r",
 									"    }\r",
 									"}\r",
@@ -318,6 +319,7 @@
 									"        if (pathlevel != '') { point = \".\" }\r",
 									"        responBody = getValueJSON(pathlevel + point + propertyList[propierty], responseData);\r",
 									"        responCsvBody = getValueJSON(pathlevel + point + propertyList[propierty], csvResponseBody);\r",
+									"\r",
 									"        if (responBody == undefined) { pm.collectionVariables.set(\"reporte\", false); return \"***ERROR***La informacion no fue encontrada por favor verifique***ERROR***\" }\r",
 									"\r",
 									"        if (responBody != responCsvBody) {\r",
@@ -334,15 +336,18 @@
 									"\r",
 									"function validateByIndex() {\r",
 									"    console.log(\"validateByIndex\")\r",
-									"\r",
+									"    var point = ''\r",
 									"    var i = 0;\r",
 									"\r",
 									"    do {\r",
 									"        for (propierty in propertyList) {\r",
+									"            if (pathlevel != '') { point = \".\" }\r",
 									"            //variables para recorrer la respuesta del request y la respuesta del csv\r",
-									"            responBody = getValueJSON(pathlevel + \"[\" + i + \"].\" + propertyList[propierty], responseData);\r",
-									"            responCsvBody = getValueJSON(pathlevel + \"[\" + i + \"].\" + propertyList[propierty], csvResponseBody);\r",
+									"            responBody = getValueJSON(pathlevel + \"[\" + i + \"]\" + point + propertyList[propierty], responseData);\r",
+									"            responCsvBody = getValueJSON(pathlevel + \"[\" + i + \"]\" + point + propertyList[propierty], csvResponseBody);\r",
+									"\r",
 									"            if (responBody == undefined) { pm.collectionVariables.set(\"reporte\", false); return \"***ERROR***La informacion no fue encontrada por favor verifique***ERROR***\" }\r",
+									"\r",
 									"            if (responBody != responCsvBody) {\r",
 									"                report = (\"el valor no coincide: \" + propertyList[propierty] + \" Valor response: \" + responBody + \" valor csv: \" + responCsvBody + \" El empleado con el error es :\" + getValueJSON(pathlevel + \"[\" + i + \"].fullName\", csvResponseBody));\r",
 									"                pm.collectionVariables.set(\"reporte\", false);\r",
@@ -364,10 +369,13 @@
 									"\r",
 									"    do {\r",
 									"        for (propierty in propertyList) {\r",
+									"            \r",
 									"            //variables para recorrer la respuesta del request y la respuesta del csv\r",
 									"            responBody = getValueJSON(pathlevel + \"[\" + i + \"].\" + pathLevelIndexByProperties + \".\" + propertyList[propierty], responseData);\r",
 									"            responCsvBody = getValueJSON(pathlevel + \"[\" + i + \"].\" + pathLevelIndexByProperties + \".\" + propertyList[propierty], csvResponseBody);\r",
+									"\r",
 									"            if (responBody == undefined) { pm.collectionVariables.set(\"reporte\", false); return \"***ERROR***La informacion no fue encontrada por favor verifique***ERROR***\" }\r",
+									"\r",
 									"            if (responBody != responCsvBody) {\r",
 									"                report = (\"el valor no coincide: \" + propertyList[propierty] + \" Valor response: \" + responBody + \" valor csv: \" + responCsvBody);\r",
 									"                pm.collectionVariables.set(\"reporte\", false);\r",
@@ -387,19 +395,24 @@
 									"\r",
 									"    var i = 0;\r",
 									"\r",
-									"\r",
 									"    do {\r",
 									"        try {\r",
 									"            var csvRespondeLengthTwo = Object.keys(getValueJSON(pathlevel + \"[\" + i + \"].\" + pathLevelIndexByProperties, csvResponseBody)).length;\r",
-									"        } catch (e) { console.log(\"Contador csvRespondeLengthTwo Null\") }\r",
+									"        } catch (e) {\r",
+									"            console.log(\"Contador csvRespondeLengthTwo Null\");\r",
+									"            pm.collectionVariables.set(\"reporte\", false);\r",
+									"            return \"***ERROR***La informacion no fue encontrada por favor verifique***ERROR***\"\r",
+									"        }\r",
 									"\r",
 									"        for (var j = 0; j < csvRespondeLengthTwo; j++) {\r",
+									"\r",
 									"            for (propierty in propertyList) {\r",
 									"                //variables para recorrer la respuesta del request y la respuesta del csv\r",
 									"                responBody = getValueJSON(pathlevel + \"[\" + i + \"].\" + pathLevelIndexByProperties + \"[\" + j + \"].\" + propertyList[propierty], responseData);\r",
 									"                responCsvBody = getValueJSON(pathlevel + \"[\" + i + \"].\" + pathLevelIndexByProperties + \"[\" + j + \"].\" + propertyList[propierty], csvResponseBody);\r",
 									"\r",
-									"                if (responBody == undefined) { pm.collectionVariables.set(\"reporte\", false); return \"***ERROR***La informacion no fue encontrada por favor verifique***ERROR***\" };\r",
+									"                if (responBody == undefined) { pm.collectionVariables.set(\"reporte\", false); return \"***ERROR***La informacion no fue encontrada por favor verifique***ERROR***\"};\r",
+									"\r",
 									"                if (responBody != responCsvBody) {\r",
 									"                    report = (\"el valor no coincide: \" + propertyList[propierty] + \" Valor response: \" + responBody + \" valor csv: \" + responCsvBody + \" El empleado con el error es :\" + getValueJSON(pathlevel + \"[\" + i + \"].fullName\", csvResponseBody));\r",
 									"                    pm.collectionVariables.set(\"reporte\", false);\r",
@@ -453,7 +466,7 @@
 									"\r",
 									"pm.collectionVariables.set(\"pathlevel\", 'employeesData');\r",
 									"\r",
-									"pm.collectionVariables.set(\"propertyList\", \"usersValue\");\r",
+									"pm.collectionVariables.set(\"propertyList\", \"conceptName,description\");\r",
 									"\r",
 									"pm.collectionVariables.set(\"pathLevelIndexByProperties\", \"novelties\");\r",
 									"\r",
@@ -489,7 +502,7 @@
 								"{{payrollPeriodId}}"
 							]
 						},
-						"description": "Se realizan test fijos y variables desde csv "
+						"description": "Se realizan test fijos y variables desde csv"
 					},
 					"response": [
 						{
@@ -687,177 +700,177 @@
 	],
 	"variable": [
 		{
-			"id": "a8b56c28-b9c4-4543-b75a-dc36a6317bfa",
+			"id": "57757ab1-e389-49ac-8616-364b34bccc15",
 			"key": "payrollPeriodId",
 			"value": "Variable de response"
 		},
 		{
-			"id": "4663d1ef-3e42-4a5b-81cb-d8b836d215de",
+			"id": "c7985d95-1907-42a6-808c-2b54ec7f29b4",
 			"key": "json",
 			"value": ""
 		},
 		{
-			"id": "c4a540d3-2083-468a-8fb9-ec4f786d8a65",
+			"id": "432191ad-191d-4a1e-b016-1c04ca5d6064",
 			"key": "totalRevenue",
 			"value": ""
 		},
 		{
-			"id": "118718a1-aa9b-4f9e-b907-8a02149769ca",
+			"id": "071c259f-8906-43c0-8d57-61298c9427b3",
 			"key": "totalDeduction",
 			"value": ""
 		},
 		{
-			"id": "a6a98659-db07-419f-b746-7f65b2b388c9",
+			"id": "1988f2c7-a2e3-4194-97a3-1ac2174e9594",
 			"key": "totalNeto",
 			"value": ""
 		},
 		{
-			"id": "d51f1702-8d20-4222-ba6b-16b1266b0ff5",
+			"id": "03b884fe-d777-4903-ab38-4ff19a0096ec",
 			"key": "password",
 			"value": ""
 		},
 		{
-			"id": "75b2cf6a-6f47-408b-8bcc-d2b84e2d417b",
+			"id": "110ece57-cd16-4e7c-96d2-37b550dd9238",
 			"key": "username",
 			"value": ""
 		},
 		{
-			"id": "b2de812b-0a6a-4aef-a46f-83859ce1cfa0",
+			"id": "968f8569-4b76-44d2-b31d-5f36f1546d57",
 			"key": "periodType",
 			"value": ""
 		},
 		{
-			"id": "ff9eb43b-4a1e-4652-aec8-c161e56dc2a7",
+			"id": "e71800ab-0a65-4802-9086-11d9c583c51e",
 			"key": "description",
 			"value": ""
 		},
 		{
-			"id": "6a02dee9-9000-4e61-b195-e20216db12ad",
+			"id": "c74a89ad-bf13-420a-b003-386dac3db0d1",
 			"key": "year",
 			"value": ""
 		},
 		{
-			"id": "defc041c-9f17-4d05-8949-f03ad8809411",
+			"id": "b40c5b73-07a0-4eae-8bff-3942ede7dcce",
 			"key": "month",
 			"value": ""
 		},
 		{
-			"id": "051eca15-f700-4560-b3b5-a2014b119a9e",
+			"id": "6aaafc95-61d3-4f01-bfc5-5d61ed3e5b67",
 			"key": "propertyEmployees",
 			"value": ""
 		},
 		{
-			"id": "c0e5bb4a-d640-4962-a687-af9a47f32fcb",
+			"id": "1c323f95-938a-4fbd-b400-7ea398c27872",
 			"key": "propertyConcept",
 			"value": ""
 		},
 		{
-			"id": "7536f4ea-9ea7-4f9d-a6a5-02e3683e3ea3",
+			"id": "bfcd2157-faef-4a37-9ff9-b980d4e791a1",
 			"key": "errors",
 			"value": ""
 		},
 		{
-			"id": "243d3ff0-534c-4a6a-ae5b-2d0b4d96c8ff",
+			"id": "16bfb1e8-7246-4c97-bb9a-8520a9e76fb3",
 			"key": "stringResponse",
 			"value": ""
 		},
 		{
-			"id": "1f5b2066-3de8-4e0b-bcf4-14e532f532a8",
+			"id": "f0b745e4-2c86-4d06-8589-ea44e26d5a06",
 			"key": "stringResponseCreate",
 			"value": ""
 		},
 		{
-			"id": "2a1f8a3a-9b46-42d0-9121-5e1f7bdcdeb8",
+			"id": "65afe703-0f7e-46b5-b406-70a25f74ff21",
 			"key": "payrollPeriodIdTest",
 			"value": ""
 		},
 		{
-			"id": "3650e0bd-2744-4c8f-b40d-cdea643114e4",
+			"id": "cd4150b9-c6d3-4e8c-961e-29efc6437755",
 			"key": "string",
 			"value": ""
 		},
 		{
-			"id": "d267c960-b64b-4465-9366-558676ad5637",
+			"id": "c1390b91-f4a3-4701-b216-239df59cc550",
 			"key": "status",
 			"value": ""
 		},
 		{
-			"id": "6c5fdd7b-fe7f-48dc-a4fd-03d4856e346c",
+			"id": "9a1ca6fe-1814-460a-968d-08f1e078ae9b",
 			"key": "statusDelete",
 			"value": ""
 		},
 		{
-			"id": "6c003859-541b-43ef-a33f-0d4942693ccb",
+			"id": "787f0055-f01e-49a0-8354-66b689a25969",
 			"key": "statusCreate",
 			"value": ""
 		},
 		{
-			"id": "de9e1a5d-dc0f-474b-97e1-16085ab972ce",
+			"id": "e50eada7-21c8-406b-be07-5f3286cede4e",
 			"key": "statusGetPayroll",
 			"value": ""
 		},
 		{
-			"id": "5679ccba-e267-4844-b7de-fd01d01b6d8d",
+			"id": "b85f7e76-985e-4494-9246-97519855f6c6",
 			"key": "index",
 			"value": ""
 		},
 		{
-			"id": "9e53f009-2703-4f34-b963-fd2844e85619",
+			"id": "a4a40c3c-60fb-4cb9-9fea-423e38fc3b6e",
 			"key": "levelName1",
 			"value": ""
 		},
 		{
-			"id": "f22e4dab-f7cc-41cf-9373-cf36eceb8839",
+			"id": "d5b48b10-99ca-4f85-9e36-d893ccb67062",
 			"key": "jsonTest",
 			"value": ""
 		},
 		{
-			"id": "32ad287f-24de-43a2-9e62-96b6ef50c157",
+			"id": "6aedc5f0-6274-4217-87e4-bc2320fa1e71",
 			"key": "propertyList",
 			"value": ""
 		},
 		{
-			"id": "2dc0f6d5-4080-4503-92c2-f5477a2d1b61",
+			"id": "01c21c65-341a-49c1-adc5-94e8c324b180",
 			"key": "reporte",
 			"value": ""
 		},
 		{
-			"id": "020a35b9-ca47-4dc8-97af-9968ac8537be",
+			"id": "b8043568-3f22-4d1a-bf8c-0c6c3a8eb1c8",
 			"key": "levelName",
 			"value": ""
 		},
 		{
-			"id": "fd72ad87-5291-4716-bb9e-65f283f83dfc",
+			"id": "9d686ea6-6ae9-4219-bbe0-f8b36a217cc4",
 			"key": "levelNameIndexByProperties",
 			"value": ""
 		},
 		{
-			"id": "cd577d79-f2e7-47fa-ab40-6c01035baaaa",
+			"id": "9dc2452c-18c7-4588-b6f5-08d2132eaf32",
 			"key": "pathlevel",
 			"value": ""
 		},
 		{
-			"id": "e74e20d6-e0bf-4646-bd4d-80e62f91ebc3",
+			"id": "ba2a5542-17ed-4ee3-b778-6de2a3d6942b",
 			"key": "Escenario",
 			"value": ""
 		},
 		{
-			"id": "f6782e06-bbc6-469d-b665-7881c0a38b60",
+			"id": "88b7df27-e320-41bf-8e28-f0f906e1d27f",
 			"key": "scenario",
 			"value": ""
 		},
 		{
-			"id": "b73832d6-589a-4966-bc80-29c6450c48a0",
+			"id": "40d57dba-e744-4d2b-b760-ef278c3c2fa4",
 			"key": "pathNameIndexByProperties",
 			"value": ""
 		},
 		{
-			"id": "d4d1539c-e8de-4069-9af5-05d51ec38c0f",
+			"id": "aee04095-52f4-46b0-a75f-b7749bb25367",
 			"key": "pathLeveIndexByProperties",
 			"value": ""
 		},
 		{
-			"id": "1c04d36e-9b95-40bb-896b-d8f4aa528e07",
+			"id": "698704bd-9a8c-4b2d-aab5-da4701746e47",
 			"key": "pathLevelIndexByProperties",
 			"value": ""
 		}
