@@ -1,0 +1,28 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+
+
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+- task: NewmanPostman@4
+  inputs:
+    collectionSourceType: 'file'
+    collectionFileSource: 'Postman/PayrollLiquidator_V2.postman_collection.json'
+    Contents: 
+    environmentSourceType: 'none'
+    dataFile: 'Postman/Nominacsv1_V2.csv'
+    numberOfIterations: 
+    reporters: 'junit'
+    reporterJUnitExport: 'Postman/Results'
+- task: PublishTestResults@2
+  inputs:
+    testResultsFormat: 'JUnit'
+    testResultsFiles: 'Postman/Results/*.xml'
+    testRunTitle: 'PayrollLiquidator'
