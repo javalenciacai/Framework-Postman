@@ -19,7 +19,8 @@ steps:
     environmentSourceType: 'none'
     dataFile: 'Postman/Nominacsv1_V2.csv'
     numberOfIterations: 
-    
+    reporters: 'junit'
+    reporterJUnitExport: 'Postman/Results'
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'JUnit'
