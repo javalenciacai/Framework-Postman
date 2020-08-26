@@ -20,20 +20,16 @@ steps:
   displayName: 'Install Newman-Reporter-htmlextra'
   inputs:
     script: 'sudo npm install -g newman-reporter-htmlextra'   
-- task: NewmanPostman@4
-  inputs:    
-    collectionSourceType: 'file'
-    collectionFileSource: 'Postman/PayrollLiquidator_V2.postman_collection.json'
-    Contents: 
-    environmentSourceType: 'none'
-    dataFile: 'Postman/Nominacsv1_V2.csv'
-    numberOfIterations: 
-    reporters: 'htmlextra'
-    reporterHtmlExtraExport: 'Postman/reports'
-    customReporter: 'intex.html'
+    
+- task: CmdLine@2
+  displayName: 'PayrollLiquidator Test Execution'
+  continueOnError: true
+  inputs:
+    script: 'newman run PayrollLiquidator_V2.postman_collection.json -d Nominacsv1_V2.csv --insecure -r htmlextra --reporter-htmlextra-export ./results/index.html'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/Postman'
 - task: UploadPostmanHtmlReport@1
   inputs:
-    cwd: '$(System.DefaultWorkingDirectory)/Postman/reports'
+    cwd: '$(System.DefaultWorkingDirectory)/Postman/results'
     tabName: 'Postman Payroll'
 
 
