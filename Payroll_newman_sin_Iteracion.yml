@@ -25,7 +25,7 @@ steps:
   displayName: 'PayrollLiquidator Test Execution'
   continueOnError: true
   inputs:
-    script: 'newman run PayrollLiquidator_V2.postman_collection.json -d Nominacsv1_V2.csv --insecure -r htmlextra --reporter-htmlextra-export ./results/index.html'
+    script: 'newman run PayrollLiquidator_V2.postman_collection.json -d Nominacsv1_V2.csv --insecure -r cli,htmlextra --reporter-htmlextra-export ./results/index.html'
     workingDirectory: '$(System.DefaultWorkingDirectory)/Postman'
 - task: UploadPostmanHtmlReport@1
   inputs:
