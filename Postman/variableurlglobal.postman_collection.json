@@ -1,0 +1,165 @@
+{
+	"info": {
+		"_postman_id": "a62ce6aa-fef2-440f-8d05-f99fbc68a620",
+		"name": "variableurlglobal",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "SINGLE USER Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fb166df6-fe5e-4b09-af27-63ba3fb10b22",
+						"exec": [
+							"//Captura el código de estado que viene en el archivo",
+							"testStatus = pm.variables.get(\"statusGet\");",
+							"scenario = pm.variables.get(\"scenario\");",
+							"",
+							"let utils = eval(environment.utils)();",
+							"",
+							"//Test que verifica el código de estado",
+							"pm.test(\"Escenario Get: \" + scenario + \": Código de estado es: \" + testStatus, function () {",
+							"    pm.response.to.have.status(testStatus);",
+							"});",
+							"",
+							"//Test para verificar el tiempo de respuesta",
+							"pm.test(\"Escenario Get: \" + scenario + \": Tiempo de respuesta es menor a 4500\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(4500);",
+							"});",
+							"",
+							"if (testStatus == 200) {",
+							"    //Test para velificar la información",
+							"    pm.test(\"Escenario Get: \" + scenario + \": Verificación de la información \" + utils.selectFunctByIndex(), function () {",
+							"        pm.expect(pm.collectionVariables.get(\"reporte\")).to.eql(true);",
+							"    });",
+							"}",
+							"james = JSON.parse(responseBody)",
+							"console.log(james)",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "c054979b-b3d8-4fd0-9077-06d45e1962a8",
+						"exec": [
+							"",
+							"",
+							"var jsonTest = {\"data\":{\"id\":2,\"email\":\"janet.weaver@reqres.in\",\"first_name\":\"Janet\",\"last_name\":\"Weaver\",\"avatar\":\"https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg\"},\"ad\":{\"company\":\"StatusCode Weekly\",\"url\":\"http://statuscode.org/\",\"text\":\"A weekly newsletter focusing on software development, infrastructure, the server, performance, and the stack end of things.\"}}",
+							"jsonTest = JSON.stringify(jsonTest)",
+							"",
+							"pm.collectionVariables.set(\"jsonTest\", pm.collectionVariables.get(\"jsonTestGet\"))",
+							"pm.collectionVariables.set(\"statusGet\", 200);",
+							"",
+							"pm.collectionVariables.set(\"jsonTest\" , jsonTest);",
+							"",
+							"//opciones de index = 1. byProperties, 2. byIndex, 3. indexByProperties, 4. indexByPropertiesByIndex",
+							"pm.collectionVariables.set(\"index\",\"byProperties\");",
+							"",
+							"pm.collectionVariables.set(\"pathlevel\", 'data');",
+							"",
+							"pm.collectionVariables.set(\"propertyList\", \"email\");",
+							"",
+							"pm.collectionVariables.set(\"pathLevelIndexByProperties\", \"novelties\");",
+							"",
+							"pm.collectionVariables.set(\"scenario\", \"Escenario no definido\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url_reqres}}/api/users/2",
+					"host": [
+						"{{url_reqres}}"
+					],
+					"path": [
+						"api",
+						"users",
+						"2"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "90f722ae-0ba7-4282-ad6d-093a3f4a9548",
+				"type": "text/javascript",
+				"exec": [
+					"// obtiene el framework de postman",
+					"pm.sendRequest('https://bstestmail.blob.core.windows.net/scripts/Postman_utils_V1.0.js', (err, res) => {",
+					"text = res.text();",
+					"pm.environment.set(\"utils\",text);",
+					"});"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "26632866-df8b-4149-ba10-07165409f7cc",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "fab6e765-6d06-41ab-8452-ee7770a26a82",
+			"key": "index",
+			"value": ""
+		},
+		{
+			"id": "d9b5f8fc-be1f-4a72-8791-e169d492807e",
+			"key": "jsonTest",
+			"value": ""
+		},
+		{
+			"id": "fbdb1502-f48d-4b11-81b9-d434035df723",
+			"key": "pathLevelIndexByProperties",
+			"value": ""
+		},
+		{
+			"id": "588970d8-a5d7-41dd-b45d-b7a101127152",
+			"key": "pathlevel",
+			"value": ""
+		},
+		{
+			"id": "15c61c8f-d1f2-4581-936a-e9330c460e0d",
+			"key": "propertyList",
+			"value": ""
+		},
+		{
+			"id": "7177fc89-cae5-431c-b05f-4931fd2a5d74",
+			"key": "scenario",
+			"value": ""
+		},
+		{
+			"id": "826f21cf-b1c6-4ec1-a04d-6d9aebfeea2a",
+			"key": "statusGet",
+			"value": ""
+		},
+		{
+			"id": "9852b3d7-a87c-41a6-a9c0-c6374de472f6",
+			"key": "reporte",
+			"value": ""
+		}
+	],
+	"protocolProfileBehavior": {}
+}
