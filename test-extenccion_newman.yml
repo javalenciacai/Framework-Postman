@@ -22,7 +22,7 @@ steps:
   displayName: 'PayrollLiquidator Test Execution'
   continueOnError: true
   inputs:
-    script: 'newman run PayrollLiquidator_V2.postman_collection.json -d Nominacsv1_V2.csv --insecure --reporters cli,junit,htmlextra --reporter-junit-export results/junitReport.xml --reporter-htmlextra-export ./results/index.html'
+    script: 'newman run variableurlglobal.postman_collection.json -e https://dev.azure.com/Prueba1james/Prueba1/_apis/sourceProviders/TfsGit/filecontents?repository=testVariableGlobal&path=%2FurlQA.json&commitOrBranch=master&api-version=5.0-preview.1 --reporters cli,junit,htmlextra --reporter-junit-export results/junitReport.xml --reporter-htmlextra-export ./results/index.html'
     workingDirectory: '$(System.DefaultWorkingDirectory)/Postman'
 
 - task: PublishTestResults@2
