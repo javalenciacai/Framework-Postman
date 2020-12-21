@@ -82,17 +82,16 @@
         console.log("validateByProperties")
         var point = '';
         for (propierty in propertyList) {
-			console.log("paso 1 " + propierty)
             //variables para recorrer la respuesta del request y la respuesta del csv            
             if (pathlevel != '') { point = "." }                    
             responBody = getValueJSON(pathlevel + point + propertyList[propierty], responseData);
             responCsvBody = getValueJSON(pathlevel + point + propertyList[propierty], csvResponseBody);
-				
-	   validateUndefined(responBody, responCsvBody) ;                  
-           console.log("paso 3 " + responBody != responCsvBody)
+                        
+            if (responBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion no fue encontrada, por favor verifique***ERROR***" }
+
             if (responBody != responCsvBody) {
-                report = ("no coincide: " + propertyList[propierty] + ". Valor de la ejecución: " + responBody + ". Valor csv: " + responCsvBody);
-                pm.collectionVariables.set("reporte", false);
+                report = ("la propiedad: " + propertyList[propierty] + "genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
+		            pm.collectionVariables.set("reporte", false);
                 return report;
             }
             else {
@@ -118,8 +117,8 @@
 
                 if (responBody != responCsvBody) {
                     //esta opcion esta modificada para nomina se le agrego la impresion del empleado
-                    report = ("no coincide: " + propertyList[propierty] + ". Valor de la ejecución: " + responBody + ". Valor csv: " + responCsvBody);
-                    pm.collectionVariables.set("reporte", false);
+                    report = ("la propiedad: " + propertyList[propierty] + "genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
+		            pm.collectionVariables.set("reporte", false);
                     return report;
                 }
                 else {
@@ -143,8 +142,8 @@
                 if (responBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion no fue encontrada por favor verifique***ERROR***" }
 
                 if (responBody != responCsvBody) {
-                    report = ("el valor no coincide: " + propertyList[propierty] + " Valor response: " + responBody + " valor csv: " + responCsvBody);
-                    pm.collectionVariables.set("reporte", false);
+                    report = ("la propiedad: " + propertyList[propierty] + "genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
+		            pm.collectionVariables.set("reporte", false);
                     return report;
                 }
                 else {
@@ -176,8 +175,8 @@
                     if (responBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion no fue encontrada por favor verifique***ERROR***" };
 
                     if (responBody != responCsvBody) {
-                        report = ("el valor no coincide: " + propertyList[propierty] + " Valor response: " + responBody + " valor csv: " + responCsvBody);
-                        pm.collectionVariables.set("reporte", false);
+                        report = ("la propiedad: " + propertyList[propierty] + "genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
+		            pm.collectionVariables.set("reporte", false);
                         return report;
                     }
                     else {
@@ -226,14 +225,6 @@
 		} while (i < csvRespondeLengthTwo)
 		return ("es correcta");
 	    }
-		
-		// Validaciones
-		
-		function  validateUndefined(responBody,responCsvBody){
-			 console.log("paso 3 ")
-			 if (responBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion de la ***respuesta del API*** no fue encontrada, por favor verifique***ERROR***" }
-			if (responCsvBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion del ***json del archivo CSV*** no fue encontrada, por favor verifique***ERROR***" }
-		}
 
    return {
         selectFunctByIndex
