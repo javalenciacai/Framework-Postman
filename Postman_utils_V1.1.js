@@ -82,12 +82,16 @@
         console.log("validateByProperties")
         var point = '';
         for (propierty in propertyList) {
+			console.log("paso 1 " + propierty)
             //variables para recorrer la respuesta del request y la respuesta del csv            
             if (pathlevel != '') { point = "." }                    
             responBody = getValueJSON(pathlevel + point + propertyList[propierty], responseData);
             responCsvBody = getValueJSON(pathlevel + point + propertyList[propierty], csvResponseBody);
 			
-			validateUndefined(responBody, responCsvBody)                    
+			console.log("paso 2 " + responBody)
+			console.log("paso 3 " + responCsvBody)
+			
+			validateUndefined(responBody, responCsvBody) ;                  
            
             if (responBody != responCsvBody) {
                 report = ("no coincide: " + propertyList[propierty] + ". Valor de la ejecución: " + responBody + ". Valor csv: " + responCsvBody);
