@@ -87,11 +87,8 @@
             if (pathlevel != '') { point = "." }                    
             responBody = getValueJSON(pathlevel + point + propertyList[propierty], responseData);
             responCsvBody = getValueJSON(pathlevel + point + propertyList[propierty], csvResponseBody);
-			
-			console.log("paso 2 " + responBody)
-			console.log("paso 3 " + responCsvBody)
-			
-			validateUndefined(responBody, responCsvBody) ;                  
+				
+	   validateUndefined(responBody, responCsvBody) ;                  
            console.log("paso 3 " + responBody != responCsvBody)
             if (responBody != responCsvBody) {
                 report = ("no coincide: " + propertyList[propierty] + ". Valor de la ejecución: " + responBody + ". Valor csv: " + responCsvBody);
@@ -233,6 +230,7 @@
 		// Validaciones
 		
 		function  validateUndefined(responBody,responCsvBody){
+			 console.log("paso 3 ")
 			 if (responBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion de la ***respuesta del API*** no fue encontrada, por favor verifique***ERROR***" }
 			if (responCsvBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion del ***json del archivo CSV*** no fue encontrada, por favor verifique***ERROR***" }
 		}
