@@ -92,7 +92,7 @@
 			console.log("paso 3 " + responCsvBody)
 			
 			validateUndefined(responBody, responCsvBody) ;                  
-           
+           console.log("paso 3 " + responBody != responCsvBody)
             if (responBody != responCsvBody) {
                 report = ("no coincide: " + propertyList[propierty] + ". Valor de la ejecución: " + responBody + ". Valor csv: " + responCsvBody);
                 pm.collectionVariables.set("reporte", false);
