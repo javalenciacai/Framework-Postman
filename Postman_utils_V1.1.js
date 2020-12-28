@@ -87,7 +87,7 @@
             responBody = getValueJSON(pathlevel + point + propertyList[propierty], responseData);
             responCsvBody = getValueJSON(pathlevel + point + propertyList[propierty], csvResponseBody);
                         
-            if (responBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion no fue encontrada, por favor verifique***ERROR***" }
+            if(valueUndefined(responBody,responCsvBody)){return pm.collectionVariables.get("infoError")};
 
             if (responBody != responCsvBody) {
                 report = ("la propiedad: " + propertyList[propierty] + " genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
@@ -113,7 +113,7 @@
                 responBody = getValueJSON(pathlevel + "[" + i + "]" + point + propertyList[propierty], responseData);
                 responCsvBody = getValueJSON(pathlevel + "[" + i + "]" + point + propertyList[propierty], csvResponseBody);
 
-                if (responBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion no fue encontrada por favor verifique***ERROR***" }
+                if(valueUndefined(responBody,responCsvBody)){return pm.collectionVariables.get("infoError")};
 
                 if (responBody != responCsvBody) {
                     //esta opcion esta modificada para nomina se le agrego la impresion del empleado
@@ -139,10 +139,8 @@
                 responBody = getValueJSON(pathlevel + "[" + i + "]." + pathLevelIndexByProperties + "." + propertyList[propierty], responseData);
                 responCsvBody = getValueJSON(pathlevel + "[" + i + "]." + pathLevelIndexByProperties + "." + propertyList[propierty], csvResponseBody);
 				
-				if(valueUndefined(responBody,responCsvBody)){return pm.collectionVariables.get("infoError")}
-                //if (responBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion de responBody no fue encontrada por favor verifique***ERROR***" }
-				//if (responCsvBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion de responCsvBody no fue encontrada por favor verifique***ERROR***" }
-
+				if(valueUndefined(responBody,responCsvBody)){return pm.collectionVariables.get("infoError")};
+				
                 if (responBody != responCsvBody) {
                     report = ("la propiedad: " + propertyList[propierty] + " genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
 		            pm.collectionVariables.set("reporte", false);
@@ -173,8 +171,8 @@
                     //variables para recorrer la respuesta del request y la respuesta del csv
                     responBody = getValueJSON(pathlevel + "[" + i + "]." + pathLevelIndexByProperties + "[" + j + "]." + propertyList[propierty], responseData);
                     responCsvBody = getValueJSON(pathlevel + "[" + i + "]." + pathLevelIndexByProperties + "[" + j + "]." + propertyList[propierty], csvResponseBody);
-
-                    if (responBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion no fue encontrada por favor verifique***ERROR***" };
+					
+					if(valueUndefined(responBody,responCsvBody)){return pm.collectionVariables.get("infoError")};
 
                     if (responBody != responCsvBody) {
                         report = ("la propiedad: " + propertyList[propierty] + " genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
@@ -210,10 +208,8 @@
 			if (pathLevelIndexByProperties != '') { point = "." }  
 		        responBody = getValueJSON(indexLocal + "." + pathLevelIndexByProperties + point +  propertyList[propierty], responseData);
 		        responCsvBody = getValueJSON(indexLocal + "." + pathLevelIndexByProperties + point + propertyList[propierty], csvResponseBody);
-
-		        //if (responBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion no fue encontrada por favor verifique***ERROR***" }
-				
-				if(valueUndefined(responBody,responCsvBody)){return pm.collectionVariables.get("infoError")}
+	
+				if(valueUndefined(responBody,responCsvBody)){return pm.collectionVariables.get("infoError")};
 				
 		        if (responBody != responCsvBody) {
 		            //esta opcion esta modificada para nomina se le agrego la impresion del empleado
