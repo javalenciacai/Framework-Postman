@@ -138,9 +138,10 @@
                 //variables para recorrer la respuesta del request y la respuesta del csv
                 responBody = getValueJSON(pathlevel + "[" + i + "]." + pathLevelIndexByProperties + "." + propertyList[propierty], responseData);
                 responCsvBody = getValueJSON(pathlevel + "[" + i + "]." + pathLevelIndexByProperties + "." + propertyList[propierty], csvResponseBody);
-
-                if (responBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion de responBody no fue encontrada por favor verifique***ERROR***" }
-				if (responCsvBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion de responCsvBody no fue encontrada por favor verifique***ERROR***" }
+				
+				if(valueUndefined(responBody,responCsvBody)){return pm.collectionVariables.get("infoError")}
+                //if (responBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion de responBody no fue encontrada por favor verifique***ERROR***" }
+				//if (responCsvBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion de responCsvBody no fue encontrada por favor verifique***ERROR***" }
 
                 if (responBody != responCsvBody) {
                     report = ("la propiedad: " + propertyList[propierty] + " genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
