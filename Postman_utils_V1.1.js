@@ -212,7 +212,7 @@
 
 		        //if (responBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion no fue encontrada por favor verifique***ERROR***" }
 				
-				if(valueUndefined(responBody,responCsvBody){return pm.collectionVariables.get("infoError")}
+				if(valueUndefined(responBody,responCsvBody)){return pm.collectionVariables.get("infoError")}
 				
 		        if (responBody != responCsvBody) {
 		            //esta opcion esta modificada para nomina se le agrego la impresion del empleado
