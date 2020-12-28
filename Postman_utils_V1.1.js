@@ -90,7 +90,7 @@
             if (responBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion no fue encontrada, por favor verifique***ERROR***" }
 
             if (responBody != responCsvBody) {
-                report = ("la propiedad: " + propertyList[propierty] + "genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
+                report = ("la propiedad: " + propertyList[propierty] + " genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
 		            pm.collectionVariables.set("reporte", false);
                 return report;
             }
@@ -117,7 +117,7 @@
 
                 if (responBody != responCsvBody) {
                     //esta opcion esta modificada para nomina se le agrego la impresion del empleado
-                    report = ("la propiedad: " + propertyList[propierty] + "genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
+                    report = ("la propiedad: " + propertyList[propierty] + " genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
 		            pm.collectionVariables.set("reporte", false);
                     return report;
                 }
@@ -143,7 +143,7 @@
 				if (responCsvBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion de responCsvBody no fue encontrada por favor verifique***ERROR***" }
 
                 if (responBody != responCsvBody) {
-                    report = ("la propiedad: " + propertyList[propierty] + "genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
+                    report = ("la propiedad: " + propertyList[propierty] + " genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
 		            pm.collectionVariables.set("reporte", false);
                     return report;
                 }
@@ -176,7 +176,7 @@
                     if (responBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion no fue encontrada por favor verifique***ERROR***" };
 
                     if (responBody != responCsvBody) {
-                        report = ("la propiedad: " + propertyList[propierty] + "genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
+                        report = ("la propiedad: " + propertyList[propierty] + " genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
 		            pm.collectionVariables.set("reporte", false);
                         return report;
                     }
@@ -210,11 +210,13 @@
 		        responBody = getValueJSON(indexLocal + "." + pathLevelIndexByProperties + point +  propertyList[propierty], responseData);
 		        responCsvBody = getValueJSON(indexLocal + "." + pathLevelIndexByProperties + point + propertyList[propierty], csvResponseBody);
 
-		        if (responBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion no fue encontrada por favor verifique***ERROR***" }
-
+		        //if (responBody === undefined) { pm.collectionVariables.set("reporte", false); return "***ERROR***La informacion no fue encontrada por favor verifique***ERROR***" }
+				
+				if(valueUndefined(responBody,responCsvBody){return pm.collectionVariables.get("infoError")}
+				
 		        if (responBody != responCsvBody) {
 		            //esta opcion esta modificada para nomina se le agrego la impresion del empleado
-		            report = ("la propiedad: " + propertyList[propierty] + "genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
+		            report = ("la propiedad: " + propertyList[propierty] + " genero un valor : " + responBody + " pero el valor esperado era : " + responCsvBody + " indicado en el CSV");
 		            pm.collectionVariables.set("reporte", false);
 		            return report;
 		        }
@@ -226,6 +228,23 @@
 		} while (i < csvRespondeLengthTwo)
 		return ("es correcta");
 	    }
+		
+		function valueUndefined(responBody,responCsvBody){
+			 if (responBody === undefined) 
+					{
+					  pm.collectionVariables.set("reporte", false); 
+					  pm.collectionVariables.set("infoError", "***ERROR***La informacion de responBody no fue encontrada por favor verifique***ERROR***");
+					  return true 
+					}
+			if (responCsvBody === undefined) 
+					{
+					  pm.collectionVariables.set("reporte", false); 
+					  pm.collectionVariables.set("infoError", "***ERROR***La informacion de responCsvBody no fue encontrada por favor verifique***ERROR***");
+					  return true 
+					}
+					
+					
+		}
 
    return {
         selectFunctByIndex
