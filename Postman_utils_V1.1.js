@@ -4,6 +4,8 @@
     //Obtiene el json de respuesta de la ejecución
     if (responseBody != "") {
         responseData = JSON.parse(responseBody);
+	    
+console.log(responseData);
     }
     //Obtiene el json de respuesta del archivo
     if (responseCsv != "") {
